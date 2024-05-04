@@ -7,10 +7,7 @@ const Menu = () => {
         <div>
             <AppBar position="static" style={{}}>
                 <Toolbar>
-                    <ButtonGroup color="inherit" variant="text" style={{visibility: "hidden"}}>
-                        <Button>Login</Button>
-                        <Button>Register</Button>
-                    </ButtonGroup>
+                    <Button color="inherit" href="/petitions">Petitions</Button>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Menu
                     </Typography>

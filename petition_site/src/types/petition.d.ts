@@ -21,4 +21,6 @@ type Petition = {
 
     supportingCost : number,
 
+    supportTiers : SupportTier[]
+
 }

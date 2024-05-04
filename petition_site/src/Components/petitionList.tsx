@@ -6,6 +6,7 @@ import CSS from 'csstype';
 
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { usePetitionStore } from "../store";
 
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -40,17 +41,9 @@ const PetitionList = (props: IPetitionProps) => {
     const [page, setPage] = React.useState(1)
     const [pageSize, setPageSize] = React.useState(10)
 
-
-    React.useEffect(() => {
-        getPetitions()
-    }, [sort, catFilter, search, page, pageSize])
-
-    React.useEffect(() => {
-        getCatergories()
-    }, [])
-
     const getPetitions = () => {
         console.log("getting petitions")
+        console.log(getParams())
         axios.get('http://localhost:4941/api/v1/petitions', {params: getParams()})
         .then((response) => {
             setErrorFlag(false)
@@ -64,19 +57,26 @@ const PetitionList = (props: IPetitionProps) => {
         })
     }
 
-    const [catergories, setCatergories] = React.useState<Array<Catergory>>([])
-    const getCatergories = () => {
-        axios.get('http://localhost:4941/api/v1/petitions/categories')
-        .then((response) => {
-            setErrorFlag(false)
-            setErrorMessage("")
-            setCatergories(response.data)
-        }, (error) => {
-            setErrorFlag(true)
-            setErrorMessage(error.toString())
-            console.log("error in catergories")
-        })
-    }
+
+    React.useEffect(() => {
+        getPetitions()
+    }, [sort, catFilter, search, page, pageSize])
+
+
+    const categories = usePetitionStore(state => state.Categories)
+    const setCategories = usePetitionStore(state => state.setCategories)
+    React.useEffect(() => {
+        if (categories.length === 0) {
+            axios.get("http://localhost:4941/api/v1/petitions/categories")
+            .then(response => {
+                setCategories(response.data)
+            })
+            .catch(error => {
+                setErrorFlag(true)
+                setErrorMessage(error.message)
+            })
+        }
+    }, [setCategories, categories])
 
     const getParams = () => {
         let params = {
@@ -116,8 +116,9 @@ const PetitionList = (props: IPetitionProps) => {
         }
     }
 
-    const handlePageSize = (event: any) => {
-        setPageSize(event.target.value)
+    const handlePageSize = (event: any, value: number) => {
+        console.log(value)
+        setPage(value)
     }
 
     return (
@@ -133,7 +134,7 @@ const PetitionList = (props: IPetitionProps) => {
                 <Autocomplete
                     multiple
                     id="checkboxes-tags-demo"
-                    options={catergories}
+                    options={categories}
                     disableCloseOnSelect
                     onChange={handleCats}
                     getOptionLabel={(option) => option.name}
@@ -196,7 +197,7 @@ const PetitionList = (props: IPetitionProps) => {
                 {petitions.map((petition) => {
                     return (
                         <Paper elevation={3} style={card} >
-                            <PetitionListObj petition={petition} key={petition.petitionId} catergories={catergories} />
+                            <PetitionListObj petition={petition} key={petition.petitionId} catergories={categories} />
                         </Paper>
                     )
                 })}

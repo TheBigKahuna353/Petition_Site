@@ -10,7 +10,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from 'axios';
-import { useCredStore } from '../store';
+import { useTokenStore } from '../store';
 
 
 
@@ -36,6 +36,9 @@ export default function SignUp() {
                     email: data.get('email'),
                     password: data.get('password')
                 }})
+                .then(response => {
+                    login(response.data.token);
+                })
             })
             .catch(error => {
                 console.log(error);
@@ -46,6 +49,8 @@ export default function SignUp() {
 
     const [errorFlag, setErrorFlag] = React.useState(false)
     const [errorMessage, setErrorMessage] = React.useState("")
+
+    const login = useTokenStore((state) => state.login);
 
     
     if (errorFlag) {

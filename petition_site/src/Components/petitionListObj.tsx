@@ -1,6 +1,7 @@
 import React from "react"
 import CSS from 'csstype';
 import { Card, CardMedia, Link } from "@mui/material";
+import Owner from "./OwnerDisplay";
 
 interface IPetitionProps {
     petition : Petition,
@@ -13,18 +14,9 @@ const PetitionListObj = (props: IPetitionProps) => {
 
     const imageURL = 'http://localhost:4941/api/v1/petitions/' + petition.petitionId + '/image'
 
-    const userImageURL = 'http://localhost:4941/api/v1/users/' + petition.ownerId + '/image'
-
-    const defaultUserImageURL = 'https://png.pngitem.com/pimgs/s/150-1503945_transparent-user-png-default-user-image-png-png.png'
-
 
     const date = new Date(petition.creationDate).toLocaleDateString()
 
-    const onError = (e: any) => {
-        console.log("setting default image")
-        if (e.target.src === defaultUserImageURL) return;
-        e.target.src = defaultUserImageURL
-    }
 
     const catergory = props.catergories.find((cat) => cat.categoryId === petition.categoryId)?.name
 
@@ -69,15 +61,8 @@ const PetitionListObj = (props: IPetitionProps) => {
         position: "absolute"
     }
 
-    const imageCSS: CSS.Properties = {
-        width: "50px", 
-        height: "50px", 
-        borderRadius: "50%", 
-        display: "inline-block"
-    }
-
     return (
-        <Link href={'/petitions/' + petition.petitionId}>
+        <Link href={'/petitions/' + petition.petitionId} style={{textDecoration: "none"}}>
             <Card sx={imageCard} ha-card-background={"F19782"}>
                 <CardMedia
                     component="img"
@@ -102,25 +87,7 @@ const PetitionListObj = (props: IPetitionProps) => {
                         {catergory}
                     </div>
                     <div style={ownerCSS}>
-                        <Link href={"/users/" + petition.ownerId}>
-                            <CardMedia
-                                component="img"
-                                height="50"
-                                width="50"
-                                sx={imageCSS}
-                                image={userImageURL}
-                                alt="Petition hero"
-                                onError={onError}
-                            />
-                        </Link>
-                        <div style={{display: "inline-block"}}>
-                            <div>
-                                {petition.ownerFirstName}
-                            </div>
-                            <div>
-                                {petition.ownerLastName}
-                            </div>
-                        </div>
+                        <Owner id={petition.ownerId} firstName={petition.ownerFirstName} lastName={petition.ownerLastName}/>
                     </div>
                     <div style={costCSS}>
                         <h3>
