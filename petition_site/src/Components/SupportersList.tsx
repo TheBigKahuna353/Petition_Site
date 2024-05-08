@@ -13,12 +13,13 @@ const SupportersList = (props: Props) => {
     const [supporters, setSupporters] = React.useState<Supporter[]>([])
 
     useEffect(() => {
+        if (props.petitionId === 0) return
         axios.get(`http://localhost:4941/api/v1/petitions/${props.petitionId}/supporters`)
         .then(response => {
             setSupporters(response.data)
         })
         .catch(error => {
-            console.log(error)
+            console.log(error.response.statusText)
         })
     }, [props.petitionId])
 

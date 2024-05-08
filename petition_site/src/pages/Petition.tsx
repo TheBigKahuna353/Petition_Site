@@ -47,7 +47,7 @@ const Petition = () => {
             })
             .catch(error => {
                 setErrorFlag(true)
-                setErrorMessage(error.message)
+                setErrorMessage(error.response.statusText)
             })
         }
     }, [setCategories, categories])
@@ -60,7 +60,7 @@ const Petition = () => {
         })
         .catch(error => {
             setErrorFlag(true)
-            setErrorMessage(error.message)
+            setErrorMessage(error.response.statusText)
         })
     }, [id, categories])
 
@@ -72,7 +72,7 @@ const Petition = () => {
         })
         .catch(error => {
             setErrorFlag(true)
-            setErrorMessage(error.message)
+            setErrorMessage(error.response.statusText)
         })
     }, [petition?.categoryId])
 

@@ -15,6 +15,8 @@ import Container from '@mui/material/Container';
 import {useTokenStore} from '../store';
 import axios from 'axios';
 import Menu from '../Components/Menu';
+import { usePageStore } from '../store';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -22,30 +24,31 @@ export default function SignIn() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-        email: data.get('email'),
-        password: data.get('password'),
-        });
-        axios.post('http://localhost:4941/api/login', { body: {
+        axios.post('http://localhost:4941/api/v1/users/login', {
             email: data.get('email'),
             password: data.get('password')
-        }})
+        })
         .then(response => {
-            console.log(response);
-            login(response.data.token);
+            login(response.data.token, response.data.userId);
+            if (page === "") {
+                nav("/petitions");
+            } else {
+                nav(page);
+            }
         })
         .catch(error => {
-            console.log(error.message);
             setErrorFlag(true);
-            setErrorMessage(error.message);
+            setErrorMessage(error.response.statusText);
         })
     };
 
     const [errorFlag, setErrorFlag] = React.useState(false)
     const [errorMessage, setErrorMessage] = React.useState("")
 
-    const login = useTokenStore((state) => state.login);
+    const login = useTokenStore(state => state.login)
 
+    const page = usePageStore(state => state.prevPage)
+    const nav = useNavigate()
     
     if (errorFlag) {
         return (

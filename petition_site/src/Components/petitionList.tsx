@@ -73,7 +73,7 @@ const PetitionList = (props: IPetitionProps) => {
             })
             .catch(error => {
                 setErrorFlag(true)
-                setErrorMessage(error.message)
+                setErrorMessage(error.response.statusText)
             })
         }
     }, [setCategories, categories])

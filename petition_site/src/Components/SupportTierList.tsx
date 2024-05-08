@@ -7,7 +7,8 @@ interface SupportTierListProps {
 
 const SupportTierList = (props: SupportTierListProps) => {
 
-    
+    const {supportTiers} = props
+    supportTiers.sort((a, b) => a.cost - b.cost)
 
     return (
         <div style={{marginTop: "20px"}}>
