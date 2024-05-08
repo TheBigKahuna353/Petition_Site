@@ -1,11 +1,11 @@
 import React from "react"
 import CSS from 'csstype';
-import { Card, CardMedia, Link } from "@mui/material";
+import { Card, CardMedia } from "@mui/material";
 import Owner from "./OwnerDisplay";
 
 interface IPetitionProps {
     petition : Petition,
-    catergories : Array<Catergory>
+    catergories : Array<Catergory>,
 }
 
 const PetitionListObj = (props: IPetitionProps) => {
@@ -61,8 +61,10 @@ const PetitionListObj = (props: IPetitionProps) => {
         position: "absolute"
     }
 
+
+
     return (
-        <Link href={'/petitions/' + petition.petitionId} style={{textDecoration: "none"}}>
+        <a href={'/petitions/' + petition.petitionId} style={{textDecoration: "none"}}>
             <Card sx={imageCard} ha-card-background={"F19782"}>
                 <CardMedia
                     component="img"
@@ -97,7 +99,7 @@ const PetitionListObj = (props: IPetitionProps) => {
                     </div>
                 </div>
             </Card>
-        </Link>
+        </a>
     )
 }
 

@@ -9,7 +9,7 @@ interface Props {
 
 const SupportTierListObj = (props: Props) => {
     return (
-        <Card style={{maxWidth:"30%", padding: "10px", margin:"20px"}}>
+        <Card style={{maxWidth:"30%", padding: "10px", margin:"20px", minWidth: "100px"}}>
             <h1>{props.supportTier.title}</h1>
             <h2>${props.supportTier.cost}</h2>
             <p>{props.supportTier.description}</p>

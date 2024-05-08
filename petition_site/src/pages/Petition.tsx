@@ -76,6 +76,7 @@ const Petition = () => {
         })
     }, [petition?.categoryId])
 
+
     if (errorFlag) {
         return (
             <div>
@@ -135,7 +136,7 @@ const Petition = () => {
                     {similarPets.map((petition) => {
                         return (
                             <Card elevation={3} style={card}>
-                                <PetitionListObj petition={petition} key={petition.petitionId} catergories={categories} />
+                                <PetitionListObj petition={petition} key={petition.petitionId} catergories={categories}/>
                             </Card>
                         )
                     })}

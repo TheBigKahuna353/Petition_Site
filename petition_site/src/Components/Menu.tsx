@@ -42,7 +42,7 @@ const Menu = () => {
             console.log("Menu.tsx: Logged out")
         } else if (event.target.textContent === 'Profile') {
             window.location.href = `/users/${useTokenStore.getState().userId}`
-        } else if (event.target.textContent === 'My Petitions') {
+        } else if (event.target.textContent === 'Manage Petitions') {
             window.location.href = '/myPetitions'
         }
         

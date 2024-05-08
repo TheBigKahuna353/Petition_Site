@@ -191,7 +191,7 @@ const Petitions = () => {
                     </Select>
                 </FormControl>
             </div>
-            <PetitionList petitions={petitions} catergories={categories} />
+            <PetitionList petitions={petitions} catergories={categories}/>
             <div style={pageCSS}>
                 <Pagination count={Math.ceil(NumPetitions/pageSize)} page={page} onChange={handlePageSize} style={pageCSS} />
             </div>
