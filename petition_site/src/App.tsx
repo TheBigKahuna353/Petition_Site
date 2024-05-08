@@ -7,6 +7,7 @@ import User from './pages/User';
 import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import SignUp from './pages/Register';
+import MyPetitions from './pages/MyPetitions';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/" element={<Peititions/>} />
             <Route path="/login" element={<Login/>} />
             <Route path="/register" element={<SignUp/>} />
+            <Route path="/myPetitions" element={<MyPetitions/>} />
           </Routes>
         </div>
       </Router>

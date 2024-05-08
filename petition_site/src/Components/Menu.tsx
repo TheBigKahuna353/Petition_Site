@@ -40,6 +40,10 @@ const Menu = () => {
         if (event.target.textContent === 'Logout') {
             useTokenStore.getState().logout()
             console.log("Menu.tsx: Logged out")
+        } else if (event.target.textContent === 'Profile') {
+            window.location.href = `/users/${useTokenStore.getState().userId}`
+        } else if (event.target.textContent === 'My Petitions') {
+            window.location.href = '/myPetitions'
         }
         
     };
@@ -49,7 +53,7 @@ const Menu = () => {
     const userURL = `http://localhost:4941/api/v1/users/${userId}/image`
     const defaultUserImageURL = 'https://png.pngitem.com/pimgs/s/150-1503945_transparent-user-png-default-user-image-png-png.png'
 
-    const settings = ['Profile', 'My Petitions', 'Logout'];
+    const settings = ['Profile', 'Manage Petitions', 'Logout'];
 
     const onError = (e: any) => {
         console.log("setting default image")
@@ -60,48 +64,54 @@ const Menu = () => {
 
     return (
         <div>
-            <AppBar position="static" style={{}}>
-                <Toolbar>
-                    <Button color="inherit" href="/petitions">Petitions</Button>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <AppBar position="static" style={{justifyContent: "space-between"}}>
+                <Toolbar style={{justifyContent: "center"}}>
+                    <div style={{flexGrow: "1", flexBasis: "0"}}>
+                        <Button color="inherit" href="/petitions" style={{float: "left"}}>All Petitions</Button>
+                    </div>
+                    <Typography variant="h6" component="div">
                         Menu
                     </Typography>
-                    {loggedIn ?
-                        <Box sx={{ flexGrow: 0 }}>
-                            <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar onError={onError} src={userURL} />
-                            </IconButton>
-                            </Tooltip>
-                            <Men
-                                sx={{ mt: '45px' }}
-                                id="menu-appbar"
-                                anchorEl={anchorElUser}
-                                anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                                }}
-                                open={Boolean(anchorElUser)}
-                                onClose={handleCloseUserMenu}
-                            >
-                                {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
-                                </MenuItem>
-                                ))}
-                            </Men>
-                        </Box>
-                       :
-                        <ButtonGroup color="inherit" variant="text" style={{}}>
-                            <Button href="/login" onClick={handleClick} style={loginStyle}>Login</Button>
-                            <Button href="/register" onClick={handleClick} style={registerStyle}>Register</Button>
-                        </ButtonGroup>
-                    }
+                    <div style={{flexGrow: "1", flexBasis: "0"}}>
+                        <div style={{float:"right"}}>
+                            {loggedIn ?
+                                <Box>
+                                    <Tooltip title="Open settings">
+                                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                        <Avatar onError={onError} src={userURL} />
+                                    </IconButton>
+                                    </Tooltip>
+                                    <Men
+                                        sx={{ mt: '45px' }}
+                                        id="menu-appbar"
+                                        anchorEl={anchorElUser}
+                                        anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                        }}
+                                        keepMounted
+                                        transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                        }}
+                                        open={Boolean(anchorElUser)}
+                                        onClose={handleCloseUserMenu}
+                                    >
+                                        {settings.map((setting) => (
+                                        <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                            <Typography textAlign="center">{setting}</Typography>
+                                        </MenuItem>
+                                        ))}
+                                    </Men>
+                                </Box>
+                            :
+                                <ButtonGroup color="inherit" variant="text" style={{}}>
+                                    <Button href="/login" onClick={handleClick} style={loginStyle}>Login</Button>
+                                    <Button href="/register" onClick={handleClick} style={registerStyle}>Register</Button>
+                                </ButtonGroup>
+                            }
+                        </div>
+                    </div>
                 </Toolbar>
             </AppBar>
         </div>
