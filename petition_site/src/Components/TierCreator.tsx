@@ -5,7 +5,11 @@ import CSS from 'csstype';
 
 interface tiers {
     tiers: SupportTier[],
-    setTiers: (SupportTier: SupportTier[]) => void
+    setTiers: (SupportTier: SupportTier[]) => void,
+    supportedTiers?: {supportTierId: number}[],
+    editCallback?: (tier: SupportTier) => void,
+    delteCallback?: (id: number) => void,
+    addCallback?: (tier: SupportTier) => void
 }
 
 
@@ -21,14 +25,19 @@ const TierCreator = (props: tiers) => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     // edit modal
+    const [editId, setEditId] = React.useState(-1)
     const [openEdit, setOpenEdit] = React.useState(false);
     const handleOpenEdit = () => setOpenEdit(true);
     const handleCloseEdit = () => setOpenEdit(false);
-    const [editId, setEditId] = React.useState(-1)
     // delete modal
     const [openDel, setOpenDel] = React.useState(false);
     const handleOpenDel = () => setOpenDel(true);
     const handleCloseDel = () => setOpenDel(false);
+
+    // has supporters modal
+    const [openSupporters, setOpenSupporters] = React.useState(false);
+    const handleOpenSupporters = () => setOpenSupporters(true);
+    const handleCloseSupporters = () => setOpenSupporters(false);
 
     const [errors, setErrors] = React.useState({title: false, description: false, cost: false})
     const [errorMsgs, setErrorMsgs] = React.useState({title: "Title already taken", description: "", cost: ""})
@@ -66,6 +75,9 @@ const TierCreator = (props: tiers) => {
             setTierCost(0)
             setTierDescription("")
             setTierTitle("")
+            if (props.addCallback) {
+                props.addCallback({title: tierTitle, description: tierDescription, cost: tierCost, supportTierId: tiers.length})
+        }
         }
       }
 
@@ -73,6 +85,9 @@ const TierCreator = (props: tiers) => {
         if (validateTier()) {
             setTiers([...tiers.filter(tier => tier.supportTierId !== editId), {title: tierTitle, description: tierDescription, cost: tierCost, supportTierId: editId}])
             handleCloseEdit()
+            if (props.editCallback) {
+                props.editCallback({title: tierTitle, description: tierDescription, cost: tierCost, supportTierId: editId})
+            }
             setErrorMsgs({title: "", description: "", cost: ""})
             setErrors({title: false, description: false, cost: false})
             setTierCost(0)
@@ -82,6 +97,11 @@ const TierCreator = (props: tiers) => {
       }
 
       const editTier = (id: number) => {
+        const sTier = props.supportedTiers?.find(tier => tier.supportTierId === id)
+        if (sTier) {
+            handleOpenSupporters()
+            return
+        }
         const tier = tiers.find(tier => tier.supportTierId === id)
         if (tier) {
             setTierTitle(tier.title)
@@ -93,6 +113,11 @@ const TierCreator = (props: tiers) => {
     }
 
     const deleteTier = (id: number) => {
+        const sTier = props.supportedTiers?.find(tier => tier.supportTierId === id)
+        if (sTier) {
+            handleOpenSupporters()
+            return
+        }
         const tier = tiers.find(tier => tier.supportTierId === id)
         if (tier) {
             setEditId(id)
@@ -101,6 +126,9 @@ const TierCreator = (props: tiers) => {
     }
 
     const actuallyDelete = () => {
+        if (props.delteCallback) {
+            props.delteCallback(editId)
+        }
         setTiers([...tiers.filter(tier => tier.supportTierId !== editId)])
         handleCloseDel()
     }
@@ -251,6 +279,26 @@ const TierCreator = (props: tiers) => {
                 <Button onClick={handleCloseDel}>Cancel</Button>
                 <Button onClick={actuallyDelete} autoFocus>
                     delete
+                </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={openSupporters}
+                onClose={handleCloseSupporters}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                {"Forbidden"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Cannot edit or delete a tier that has supporters
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={handleCloseSupporters} autoFocus>
+                    Ok
                 </Button>
                 </DialogActions>
             </Dialog>

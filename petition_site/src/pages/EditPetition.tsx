@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { usePageStore, usePetitionStore, useTokenStore } from "../store";
 import { Autocomplete, Button, FormControl, IconButton, Snackbar, TextField } from "@mui/material";
 import React from "react";
@@ -10,21 +10,25 @@ import axios from "axios";
 import CloseIcon from '@mui/icons-material/Close';
 
 
-const CreatePetition = () => {
+const EditPetition = () => {
+
+    const {id} = useParams();
 
     const token = useTokenStore(state => state.token);
     const loggedIn = useTokenStore(state => state.loggedIn);
     const nav = useNavigate();
     const setPage = usePageStore(state => state.setPrevPage);
 
-    const catergories = usePetitionStore(state => state.Categories)
 
+    const catergories = usePetitionStore(state => state.Categories)
     
     if (!loggedIn) {
-        setPage("/createPetition");
+        setPage("/editPetition");
         nav("/login");
     }
     const [networkError, setNetworkError] = React.useState(false)
+
+    const [updatedOpen, setUpdatedOpen] = React.useState(false)
     
     const [tiers, setTiers] = React.useState<Array<SupportTier>>([])
     const [image, setImage] = React.useState<File>()
@@ -33,11 +37,36 @@ const CreatePetition = () => {
     const [category, setCategory] = React.useState<Catergory>({categoryId: -1, name: ""})
     const [errorsPet , setErrorsPet] = React.useState({title: false, desc: false, cats: false, tiers: false, image: false})
     const [errorMessagesPet, setErrorMessagesPet] = React.useState({title: "", desc: "", cats: "", tiers: "", image: ""})
+    const [supportedTiers, setSupportedTiers] = React.useState([])
 
     const formCSS: CSS.Properties = {
         margin: "10px",
     }
 
+    React.useEffect(() => {
+        axios.get("http://localhost:4941/api/v1/petitions/" + id)
+        .then((res) => {
+            const petition = res.data
+            setTitle(petition.title)
+            setDescription(petition.description)
+            setCategory({categoryId: petition.categoryId, name: catergories.find((cat) => cat.categoryId === petition.categoryId)?.name || ""})
+            setTiers(petition.supportTiers)
+            axios.get("http://localhost:4941/api/v1/petitions/" + id + "/image")
+            .then((res) => {
+                setImage(res.data)
+            }, (error) => {
+            })
+
+        }, (error) => {
+            setNetworkError(true)
+        })
+        axios.get("http://localhost:4941/api/v1/petitions/" + id + "/supporters")
+        .then((res) => {
+            setSupportedTiers(res.data)
+        }, (error) => {
+            setNetworkError(true)
+        })
+    }, [id, catergories, tiers])
 
     const inputCSS: CSS.Properties = {
         clip: 'rect(0 0 0 0)',
@@ -51,13 +80,13 @@ const CreatePetition = () => {
         width: "1",
       }
 
-      const setTiersHandler = (tiers: Array<SupportTier>) => {
+    const setTiersHandler = (tiers: Array<SupportTier>) => {
         setTiers(tiers)
         setErrorMessagesPet({...errorMessagesPet, tiers: ""})
         setErrorsPet({...errorsPet, tiers: false})
       }
 
-      const validate = () => {
+    const validate = () => {
         let hasError = false
         let errors = {title: false, desc: false, cats: false, tiers: false, image: false}
         let errorMessages = {title: "", desc: "", cats: "", tiers: "", image: ""}
@@ -76,21 +105,40 @@ const CreatePetition = () => {
             errorMessages.cats = "Category cannot be empty"
             hasError = true
         }
-        if (tiers.length === 0) {
-            errors.tiers = true
-            errorMessages.tiers = "Tiers cannot be empty"
-            hasError = true
-        }
-        if (!image) {
-            errors.image = true
-            errorMessages.image = "Image cannot be empty"
-            hasError = true
-        }
         setErrorsPet(errors)
         setErrorMessagesPet(errorMessages)
         return !hasError
-
       }
+
+    const deleteTier = (Tid: number) => {
+        axios.delete("http://localhost:4941/api/v1/petitions/" + id + "/supportTiers/" + Tid, {headers: {
+            "X-Authorization": token
+        }}).catch((error) => {
+            setNetworkError(true)
+        })
+    }
+
+    const editTier = (tier: SupportTier) => {
+        axios.patch("http://localhost:4941/api/v1/petitions/" + id + "/supportTiers/" + tier.supportTierId, tier, {headers: {
+            "X-Authorization": token
+        }}).catch((error) => {
+            setNetworkError(true)
+            console.error(error)
+        })
+    }
+
+    const addTier = (tier: SupportTier) => {
+        axios.put("http://localhost:4941/api/v1/petitions/" + id + "/supportTiers", tier, {headers: {
+            "X-Authorization": token
+        }}).then((res) => {
+            setTiers([...tiers, res.data])
+        }, (error) => {
+            setNetworkError(true)
+            console.error(error)
+
+        })
+    }
+
 
       const submit = () => {
             if (validate()) {
@@ -98,18 +146,10 @@ const CreatePetition = () => {
                         title: title,
                         description: description,
                         categoryId: category.categoryId,
-                        supportTiers: tiers,
-                        image: image
                 }
-                axios.post("http://localhost:4941/api/v1/petitions", data, {headers: {"X-Authorization": token} })
+                axios.put("http://localhost:4941/api/v1/petitions", data, {headers: {"X-Authorization": token} })
                 .then((res) => {
-                    const filetype = image?.type.split("/")[1]
-                    axios.put("http://localhost:4941/api/v1/petitions/" + res.data.petitionId + "/image", image, {headers: {
-                        "X-Authorization": token,
-                        "Content-Type": "image/" + filetype}})
-                    .then(() => {
-                        nav("/myPetitions")
-                    })
+                    setUpdatedOpen(true)
                 }, (error) => {
                     setNetworkError(true)
                 })
@@ -138,9 +178,18 @@ const CreatePetition = () => {
 
     const imageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            setImage(e.target.files[0])
-            setErrorsPet({...errorsPet, image: false})
-            setErrorMessagesPet({...errorMessagesPet, image: ""})
+            axios.put("http://localhost:4941/api/v1/petitions/" + id + "/image", e.target.files[0], {headers: {
+                "X-Authorization": token,
+                "Content-Type": "image/" + e.target.files[0].type.split("/")[1]}}
+            ).then(() => {
+                if (e.target.files) {
+                    setImage(e.target.files[0])
+                    window.location.reload();
+                }
+            }, (error) => {
+                setNetworkError(true)
+                console.log(error)
+            })
         }
     }
 
@@ -161,7 +210,7 @@ const CreatePetition = () => {
     return (
         <div>
             <Menu />
-            <h1>Create Petition</h1>
+            <h1>Edit Petition</h1>
             <FormControl style={{width: "50%"}}>
                 <TextField 
                     id="title" 
@@ -186,6 +235,7 @@ const CreatePetition = () => {
                     id="combo-box-demo"
                     options={catergories}
                     onChange={catChange}
+                    value={category}
                     getOptionLabel={(option) => option.name}
                     sx={{ width: 300 }}
                     style={formCSS}
@@ -198,7 +248,15 @@ const CreatePetition = () => {
                         />
                     )}
                 />
-                <TierCreator tiers={tiers} setTiers={setTiersHandler}/>
+                <Button onClick={submit} variant="contained" style={{width: "20%", margin: "auto", marginTop: "30px"}}>Save</Button>
+                <TierCreator 
+                    tiers={tiers} 
+                    setTiers={setTiersHandler} 
+                    supportedTiers={supportedTiers}
+                    addCallback={addTier}
+                    editCallback={editTier}
+                    delteCallback={deleteTier}
+                />
                 {errorsPet.tiers && <p style={{color: "red"}}>{errorMessagesPet.tiers}</p>}
                 <div>
                     <Button
@@ -212,13 +270,13 @@ const CreatePetition = () => {
                             Upload file
                             <input onChange={imageChange} style={inputCSS} id="image" accept="image/png, image/jpeg, image/gif" type="file" />
                     </Button>
-                    {errorsPet.image ? 
-                    <p style={{color: "red", display:"inline"}}>{errorMessagesPet.image}</p>
-                    :
-                    <p style={{color: "green", display:"inline"}}>{image?.name}</p>}
+                    <Button 
+                    onClick={() => nav("/myPetitions")} 
+                    variant="contained" 
+                    style={{width: "20%"}}>Back</Button>
                 </div>
-                <Button onClick={submit} variant="contained" style={{width: "20%", margin: "auto", marginTop: "30px"}}>Create</Button>
             </FormControl>
+            <img src={"http://localhost:4941/api/v1/petitions/" + id + "/image"} key={Date.now()} alt="Petition" style={{width: "200px", height: "200px"}}/>
             <Snackbar
                 open={networkError}
                 autoHideDuration={6000}
@@ -226,8 +284,15 @@ const CreatePetition = () => {
                 message="Network Error, please try again later"
                 action={action}
             />
+            <Snackbar
+                open={updatedOpen}
+                autoHideDuration={6000}
+                onClose={() => setUpdatedOpen(false)}
+                message="Updated Successfully"
+                action={action}
+            />
         </div>
     )
 }
 
-export default CreatePetition;
+export default EditPetition;

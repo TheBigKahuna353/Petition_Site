@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import SignUp from './pages/Register';
 import MyPetitions from './pages/MyPetitions';
 import CreatePetition from './pages/CreatePetition';
+import EditPetition from './pages/EditPetition';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/register" element={<SignUp/>} />
             <Route path="/myPetitions" element={<MyPetitions/>} />
             <Route path="/createPetition" element={<CreatePetition/>} />
+            <Route path="/editPetition/:id" element={<EditPetition/>} />
           </Routes>
         </div>
       </Router>

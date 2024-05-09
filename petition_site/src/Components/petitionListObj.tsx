@@ -2,10 +2,14 @@ import React from "react"
 import CSS from 'csstype';
 import { Card, CardMedia } from "@mui/material";
 import Owner from "./OwnerDisplay";
+import OptionsMenu from "./OptionsMenu";
 
 interface IPetitionProps {
     petition : Petition,
     catergories : Array<Catergory>,
+    editDelete?: boolean,
+    editCallback?: (id: number) => void,
+    deleteCallback?: (id: number) => void
 }
 
 const PetitionListObj = (props: IPetitionProps) => {
@@ -62,44 +66,51 @@ const PetitionListObj = (props: IPetitionProps) => {
     }
 
 
-
     return (
-        <a href={'/petitions/' + petition.petitionId} style={{textDecoration: "none"}}>
-            <Card sx={imageCard} ha-card-background={"F19782"}>
-                <CardMedia
-                    component="img"
-                    height="200"
-                    width="200"
-                    sx={{objectFit:"cover"}}
-                    image={imageURL}
-                    alt="Petition hero"
-                />
-            </Card>
-            <Card sx={DataCard}>
-                <div>
-                    <h2>{petition.title}</h2>
-                </div>
-            </Card>
-            <Card sx={DataCard}>
-                <div style={{position: "relative", height: "100%"}}>
-                    <div style={dateCSS}>
-                        {date}
+        <div>
+            {props.editDelete && <OptionsMenu 
+                id={petition.petitionId}
+                editCallback={props.editCallback}
+                deleteCallback={props.deleteCallback}
+            />}
+                            
+            <a href={'/petitions/' + petition.petitionId} style={{textDecoration: "none"}}>
+                <Card sx={imageCard} ha-card-background={"F19782"}>
+                    <CardMedia
+                        component="img"
+                        height="200"
+                        width="200"
+                        sx={{objectFit:"cover"}}
+                        image={imageURL}
+                        alt="Petition hero"
+                    />
+                </Card>
+                <Card sx={DataCard}>
+                    <div>
+                        <h2>{petition.title}</h2>
                     </div>
-                    <div style={catCSS}>
-                        {catergory}
+                </Card>
+                <Card sx={DataCard}>
+                    <div style={{position: "relative", height: "100%"}}>
+                        <div style={dateCSS}>
+                            {date}
+                        </div>
+                        <div style={catCSS}>
+                            {catergory}
+                        </div>
+                        <div style={ownerCSS}>
+                            <Owner id={petition.ownerId} firstName={petition.ownerFirstName} lastName={petition.ownerLastName}/>
+                        </div>
+                        <div style={costCSS}>
+                            <h3>
+                                $
+                                {petition.supportingCost}
+                            </h3>
+                        </div>
                     </div>
-                    <div style={ownerCSS}>
-                        <Owner id={petition.ownerId} firstName={petition.ownerFirstName} lastName={petition.ownerLastName}/>
-                    </div>
-                    <div style={costCSS}>
-                        <h3>
-                            $
-                            {petition.supportingCost}
-                        </h3>
-                    </div>
-                </div>
-            </Card>
-        </a>
+                </Card>
+            </a>
+        </div>
     )
 }
 

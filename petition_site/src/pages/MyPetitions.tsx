@@ -1,19 +1,37 @@
 import React from 'react';
 import Menu from '../Components/Menu';
 import axios from 'axios';
-import { usePetitionStore, useTokenStore } from '../store';
+import { usePetitionStore, useTokenStore, usePageStore } from '../store';
 import PetitionList from '../Components/petitionList';
-import { Button } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 const MyPetitions = () => {
 
     const [ownPetitions, setOwnPetitions] = React.useState<Petition[]>([]);
     const [supportedPetitions, setSupportedPetitions] = React.useState<Petition[]>([]);
     const userId = useTokenStore(state => state.userId);
+    const token = useTokenStore(state => state.token);
     const [errorFlag, setErrorFlag] = React.useState(false);
     const [errorMessage, setErrorMessage] = React.useState("");
 
     const catergories = usePetitionStore(state => state.Categories)
+
+    const setPage = usePageStore(state => state.setPrevPage);
+
+    // delete modal
+    const [openDel, setOpenDel] = React.useState(false);
+    const handleCloseDel = () => setOpenDel(false);
+    const [delId, setDelId] = React.useState<number | null>(null);
+
+    // cant delete modal
+    const [openCantDel, setOpenCantDel] = React.useState(false);
+    const handleCloseCantDel = () => setOpenCantDel(false);
+
+
+    if (userId === null) {
+        setPage("/myPetitions");
+        window.location.href = "/login";
+    }
 
     React.useEffect(() => {
         const getOwnPeitions = () => {
@@ -42,7 +60,31 @@ const MyPetitions = () => {
         getSupportedPetitions();
     }, [userId])
 
+    const handleDelete = (id: number) => {
+        setOpenDel(true)
+        setDelId(id)
+    }
 
+    const actuallyDelete = () => {
+        if (delId !== null) {
+            axios.delete('http://localhost:4941/api/v1/petitions/' + delId, { headers: {
+                "X-Authorization": token
+            }})
+            .then((response) => {
+                setOwnPetitions(ownPetitions.filter((petition) => petition.petitionId !== delId))
+                handleCloseDel()
+            }, (error) => {
+                if (error.response.statusText === "Can not delete a petition if one or more users have supported it") {
+                    setOpenCantDel(true)
+                    handleCloseDel()
+                    return
+                }
+                console.log("error in delete")
+                setErrorFlag(true)
+                setErrorMessage(error.response.statusText)
+            })
+        }
+    }
 
     if (errorFlag) {
         return (
@@ -59,7 +101,15 @@ const MyPetitions = () => {
             <Button variant="contained" style={{marginTop: "2%"}} href="/createPetition">Create Petition</Button>
             <h1>Own Petitions</h1>
             {ownPetitions.length > 0 ?
-                <PetitionList petitions={ownPetitions} catergories={catergories} editDelete={true}/>
+                <PetitionList 
+                petitions={ownPetitions} 
+                catergories={catergories} 
+                editDelete={true}
+                editCallback={(id: number) => {
+                    window.location.href = "/editPetition/" + id
+                }}
+                deleteCallback={handleDelete}
+            />
             :
                 <h2>No petitions found</h2>
             }
@@ -69,6 +119,47 @@ const MyPetitions = () => {
             :
                 <h2>No petitions found</h2>
             }
+            <Dialog
+                open={openDel}
+                onClose={handleCloseDel}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                {"Delete Petition"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Are you sure you want to delete this Petition?
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={handleCloseDel}>Cancel</Button>
+                <Button onClick={actuallyDelete} autoFocus>
+                    delete
+                </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={openCantDel}
+                onClose={handleCloseCantDel}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                {"Forbidden"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Cant delete petition with supporters
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={handleCloseCantDel} autoFocus>
+                    Ok
+                </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }
