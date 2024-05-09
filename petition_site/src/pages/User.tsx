@@ -22,7 +22,7 @@ const User = () => {
         .catch(error => {
             console.log("error in user")
         })
-    })
+    }, [userId])
 
     const imageURL = 'http://localhost:4941/api/v1/users/' + userId + '/image'
 
