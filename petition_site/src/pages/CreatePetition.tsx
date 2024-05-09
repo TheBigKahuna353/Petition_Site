@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { usePageStore, usePetitionStore, useTokenStore } from "../store";
-import { Autocomplete, Box, Button, Card, FormControl, InputAdornment, Modal, TextField, Typography } from "@mui/material";
+import { Autocomplete, Button, FormControl, TextField } from "@mui/material";
 import React from "react";
 import CSS from 'csstype';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Menu from "../Components/Menu";
-import SupportTierList from "../Components/SupportTierList";
+import TierCreator from "../Components/TierCreator";
+import { error } from "console";
 
 
 const CreatePetition = () => {
 
-    const userId = useTokenStore(state => state.userId);
+    const token = useTokenStore(state => state.token);
     const loggedIn = useTokenStore(state => state.loggedIn);
     const nav = useNavigate();
     const setPage = usePageStore(state => state.setPrevPage);
@@ -25,25 +26,17 @@ const CreatePetition = () => {
 
     
     const [tiers, setTiers] = React.useState<Array<SupportTier>>([])
-    const [tierTitle, setTierTitle] = React.useState("")
-    const [tierDescription, setTierDescription] = React.useState("")
-    const [tierCost, setTierCost] = React.useState(0)
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const [errors, setErrors] = React.useState({title: false, description: false, cost: false})
-    const [errorMsgs, setErrorMsgs] = React.useState({title: "Title already taken", description: "", cost: ""})
-    const [addButton, setAddButton] = React.useState(true)
+    const [image, setImage] = React.useState<File>()
+    const [title, setTitle] = React.useState<string>("")
+    const [description, setDescription] = React.useState<string>("")
+    const [category, setCategory] = React.useState<Catergory>({categoryId: -1, name: ""})
+    const [errorsPet , setErrorsPet] = React.useState({title: false, desc: false, cats: false, tiers: false, image: false})
+    const [errorMessagesPet, setErrorMessagesPet] = React.useState({title: "", desc: "", cats: "", tiers: "", image: ""})
 
     const formCSS: CSS.Properties = {
         margin: "10px",
     }
 
-    const tiersCSS: CSS.Properties = {
-        margin: "10px",
-        height: "350px",
-        position: "relative"
-    }
 
     const inputCSS: CSS.Properties = {
         clip: 'rect(0 0 0 0)',
@@ -57,71 +50,124 @@ const CreatePetition = () => {
         width: "1",
       }
 
-      const modalCSS = {
-        position: 'absolute' as 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: "400",
-        backgroundColor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: "24",
-        p: 4,
-      };
-
-      const modalSubmit = () => {
-        if (validateTier()) {
-            setTiers([...tiers, {title: tierTitle, description: tierDescription, cost: tierCost, supportTierId: tiers.length}])
-            handleClose()
-            setErrorMsgs({title: "", description: "", cost: ""})
-            setErrors({title: false, description: false, cost: false})
-            setTierCost(0)
-            setTierDescription("")
-            setTierTitle("")
+      const validate = () => {
+        let hasError = false
+        let errors = {title: false, desc: false, cats: false, tiers: false, image: false}
+        let errorMessages = {title: "", desc: "", cats: "", tiers: "", image: ""}
+        if (title === "") {
+            errors.title = true
+            errorMessages.title = "Title cannot be empty"
+            hasError = true
         }
+        if (description === "") {
+            errors.desc = true
+            errorMessages.desc = "Description cannot be empty"
+            hasError = true
+        }
+        if (category.categoryId === -1) {
+            errors.cats = true
+            errorMessages.cats = "Category cannot be empty"
+            hasError = true
+        }
+        if (tiers.length === 0) {
+            errors.tiers = true
+            errorMessages.tiers = "Tiers cannot be empty"
+            hasError = true
+        }
+        if (!image) {
+            errors.image = true
+            errorMessages.image = "Image cannot be empty"
+            hasError = true
+        }
+        setErrorsPet(errors)
+        setErrorMessagesPet(errorMessages)
+        return !hasError
+
       }
 
-      const validateTier = () => {
-        if (tiers.find(tier => tier.title === tierTitle) !== undefined) {
-            setErrors({...errors, title: true})
-            setErrorMsgs({...errorMsgs, title: "Title already taken"})
-            return false
-        }
-        if (tierTitle === "") {
-            setErrors({...errors, title: true})
-            setErrorMsgs({...errorMsgs, title: "Title cannot be empty"})
-            return false
-        }
-        if (tierDescription === "") {
-            setErrors({...errors, description: true})
-            setErrorMsgs({...errorMsgs, description: "Description cannot be empty"})
-            return false
-        }
-        return true
+      const submit = () => {
+            if (validate()) {
+                const data = {
+                        title: title,
+                        description: description,
+                        categoryId: category.categoryId,
+                        supportTiers: tiers,
+                        image: image
+                }
+                console.log(data)
+            }
       }
 
+    const titleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.target.value)
+        setErrorsPet({...errorsPet, title: false})
+        setErrorMessagesPet({...errorMessagesPet, title: ""})
+    }
+
+    const DescChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDescription(e.target.value)
+        setErrorsPet({...errorsPet, desc: false})
+        setErrorMessagesPet({...errorMessagesPet, desc: ""})
+    }
+
+    const catChange = (event: any, newValue: Catergory | null) => {
+        if (newValue) { 
+            setCategory(newValue)
+            setErrorsPet({...errorsPet, cats: false})
+            setErrorMessagesPet({...errorMessagesPet, cats: ""})
+        }
+    }
+
+    const imageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setImage(e.target.files[0])
+            setErrorsPet({...errorsPet, image: false})
+            setErrorMessagesPet({...errorMessagesPet, image: ""})
+        }
+    }
+        
 
     return (
         <div>
             <Menu />
             <h1>Create Petition</h1>
             <FormControl style={{width: "50%"}}>
-                <TextField id="title" label="Title" variant="outlined" style={formCSS}/>
-                <TextField id="description" label="Description" variant="outlined" style={formCSS}/>
+                <TextField 
+                    id="title" 
+                    value={title} 
+                    onChange={titleChange} 
+                    label="Title" 
+                    variant="outlined" 
+                    error={errorsPet.title}
+                    helperText={errorMessagesPet.title}
+                    style={formCSS}/>
+                <TextField 
+                    id="description" 
+                    value={description} 
+                    onChange={DescChange} 
+                    label="Description" 
+                    variant="outlined" 
+                    error={errorsPet.desc}
+                    helperText={errorMessagesPet.desc}
+                    style={formCSS}/>
                 <Autocomplete
                     disablePortal
                     id="combo-box-demo"
                     options={catergories}
+                    onChange={catChange}
                     getOptionLabel={(option) => option.name}
                     sx={{ width: 300 }}
                     style={formCSS}
-                    renderInput={(params) => <TextField {...params} label="Catergories" />}
+                    renderInput={(params) => (
+                        <TextField
+                             {...params} 
+                             label="Catergories" 
+                             error={errorsPet.cats}
+                            helperText={errorMessagesPet.cats}
+                        />
+                    )}
                 />
-                <h2>Add support tiers</h2>
-                <div style={tiersCSS}>
-                    <Button disabled={tiers.length >= 3} onClick={handleOpen} variant="contained" style={{right: "10px", top: "30px", position: "absolute"}}>Add Tier</Button>
-                    <SupportTierList supportTiers={tiers} />
-                </div>
+                <TierCreator tiers={tiers} setTiers={setTiers}/>
                 <div>
                     <Button
                         component="label"
@@ -132,60 +178,11 @@ const CreatePetition = () => {
                         startIcon={<CloudUploadIcon />}
                         >
                             Upload file
-                            <input style={inputCSS} id="image" accept="image/png, image/jpeg, image/gif" type="file" />
+                            <input onChange={imageChange} style={inputCSS} id="image" accept="image/png, image/jpeg, image/gif" type="file" />
                     </Button>
-
                 </div>
+                <Button onClick={submit} variant="contained" style={{width: "20%", margin: "auto", marginTop: "30px"}}>Create</Button>
             </FormControl>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={modalCSS}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Add Support Tier
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        <FormControl>
-                            <TextField 
-                                value={tierTitle} 
-                                onChange={(e) => {setTierTitle(e.target.value)}}
-                                id="title" 
-                                label="Title" 
-                                variant="outlined" 
-                                style={formCSS}
-                                error={errors.title}
-                                helperText={errors.title ? errorMsgs.title : ""}
-                                />
-                            <TextField 
-                                id="description" 
-                                label="Description" 
-                                variant="outlined" 
-                                style={formCSS}
-                                value={tierDescription}
-                                onChange={(e) => {setTierDescription(e.target.value)}}
-                                error={errors.description}
-                                />
-                            <TextField 
-                                id="cost" 
-                                label="Cost" 
-                                variant="outlined" 
-                                style={formCSS} 
-                                value={tierCost}
-                                onChange={(e) => {setTierCost(parseInt(e.target.value))}}
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                                }}
-                                type='number'
-                                error={errors.cost}
-                            />
-                            <Button onClick={modalSubmit} variant="contained" style={{width: "50%", margin: "auto"}}>Add Tier</Button>
-                        </FormControl>
-                    </Typography>
-                </Box>
-            </Modal>
         </div>
     )
 }

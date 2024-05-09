@@ -1,8 +1,12 @@
-import { Card } from "@mui/material";
+import { Card, IconButton, MenuItem, Typography } from "@mui/material";
 import SupportTierListObj from "./SupportTierListObj";
 
+
 interface SupportTierListProps {
-    supportTiers: SupportTier[]
+    supportTiers: SupportTier[],
+    editDelete?: boolean,
+    editCallback?: (id: number) => void,
+    deleteCallback?: (id: number) => void
 }
 
 const SupportTierList = (props: SupportTierListProps) => {
@@ -13,14 +17,16 @@ const SupportTierList = (props: SupportTierListProps) => {
     return (
         <div style={{marginTop: "20px"}}>
             <Card>
-            <h1>Support Tiers</h1>
-            <div style={{display: "flex", justifyContent: "space-evenly"}}>
-                {props.supportTiers.map((supportTier: SupportTier) => {
-                    return (
-                        <SupportTierListObj supportTier={supportTier}/>
-                    )
-                })}
-            </div>
+                <h1>Support Tiers</h1>
+                <div style={{display: "flex", justifyContent: "space-evenly"}}>
+                    {props.supportTiers.map((supportTier: SupportTier) => {
+                        return (
+                            <div style={{position: "relative"}}>
+                                <SupportTierListObj supportTier={supportTier} editDelete editCallback={props.editCallback} deleteCallback={props.deleteCallback}/>
+                            </div>
+                        )
+                    })}
+                </div>
             </Card>
         </div>
     );
