@@ -1,12 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { usePageStore, usePetitionStore, useTokenStore } from "../store";
-import { Autocomplete, Button, FormControl, TextField } from "@mui/material";
+import { Autocomplete, Button, FormControl, IconButton, Snackbar, TextField } from "@mui/material";
 import React from "react";
 import CSS from 'csstype';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Menu from "../Components/Menu";
 import TierCreator from "../Components/TierCreator";
-import { error } from "console";
+import axios from "axios";
+import CloseIcon from '@mui/icons-material/Close';
 
 
 const CreatePetition = () => {
@@ -23,7 +24,7 @@ const CreatePetition = () => {
         setPage("/createPetition");
         nav("/login");
     }
-
+    const [networkError, setNetworkError] = React.useState(false)
     
     const [tiers, setTiers] = React.useState<Array<SupportTier>>([])
     const [image, setImage] = React.useState<File>()
@@ -48,6 +49,12 @@ const CreatePetition = () => {
         left: 0,
         whiteSpace: 'nowrap',
         width: "1",
+      }
+
+      const setTiersHandler = (tiers: Array<SupportTier>) => {
+        setTiers(tiers)
+        setErrorMessagesPet({...errorMessagesPet, tiers: ""})
+        setErrorsPet({...errorsPet, tiers: false})
       }
 
       const validate = () => {
@@ -94,7 +101,18 @@ const CreatePetition = () => {
                         supportTiers: tiers,
                         image: image
                 }
-                console.log(data)
+                axios.post("http://localhost:4941/api/v1/petitions", data, {headers: {"X-Authorization": token} })
+                .then((res) => {
+                    const filetype = image?.type.split(".")[1]
+                    axios.put("http://localhost:4941/api/v1/petitions/" + res.data.petitionId + "/image", image, {headers: {
+                        "X-Authorization": token,
+                        "Content-Type": "image/" + filetype}})
+                    .then(() => {
+                        nav("/myPetitions")
+                    })
+                }, (error) => {
+                    setNetworkError(true)
+                })
             }
       }
 
@@ -125,6 +143,19 @@ const CreatePetition = () => {
             setErrorMessagesPet({...errorMessagesPet, image: ""})
         }
     }
+
+    const action = (
+        <React.Fragment>
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={() => setNetworkError(false)}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </React.Fragment>
+      );
         
 
     return (
@@ -161,17 +192,18 @@ const CreatePetition = () => {
                     renderInput={(params) => (
                         <TextField
                              {...params} 
-                             label="Catergories" 
+                             label="Catergory" 
                              error={errorsPet.cats}
                             helperText={errorMessagesPet.cats}
                         />
                     )}
                 />
-                <TierCreator tiers={tiers} setTiers={setTiers}/>
+                <TierCreator tiers={tiers} setTiers={setTiersHandler}/>
+                {errorsPet.tiers && <p style={{color: "red"}}>{errorMessagesPet.tiers}</p>}
                 <div>
                     <Button
                         component="label"
-                        style={{width: "20%"}}
+                        style={{width: "20%", marginRight: "10px"}}
                         role={undefined}
                         variant="contained"
                         tabIndex={-1}
@@ -180,9 +212,20 @@ const CreatePetition = () => {
                             Upload file
                             <input onChange={imageChange} style={inputCSS} id="image" accept="image/png, image/jpeg, image/gif" type="file" />
                     </Button>
+                    {errorsPet.image ? 
+                    <p style={{color: "red", display:"inline"}}>{errorMessagesPet.image}</p>
+                    :
+                    <p style={{color: "green", display:"inline"}}>{image?.name}</p>}
                 </div>
                 <Button onClick={submit} variant="contained" style={{width: "20%", margin: "auto", marginTop: "30px"}}>Create</Button>
             </FormControl>
+            <Snackbar
+                open={networkError}
+                autoHideDuration={6000}
+                onClose={() => setNetworkError(false)}
+                message="Network Error, please try again later"
+                action={action}
+            />
         </div>
     )
 }

@@ -5,7 +5,7 @@ import CSS from 'csstype';
 
 interface tiers {
     tiers: SupportTier[],
-    setTiers: React.Dispatch<React.SetStateAction<SupportTier[]>>
+    setTiers: (SupportTier: SupportTier[]) => void
 }
 
 
