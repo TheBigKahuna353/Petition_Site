@@ -68,7 +68,7 @@ const Petition = () => {
         if (petition?.categoryId === undefined) return;
         axios.get(`http://localhost:4941/api/v1/petitions`, {params: {categoryIds: [petition?.categoryId]}})
         .then(response => {
-            setSimilarPets(response.data.petitions)
+            setSimilarPets(response.data.petitions.filter((pet: Petition) => pet.petitionId !== petition?.petitionId))
         })
         .catch(error => {
             setErrorFlag(true)

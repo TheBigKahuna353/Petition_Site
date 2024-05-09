@@ -30,7 +30,7 @@ const Owner = (props: IOwnerProps) => {
 
     return (
         <div>
-            <Link href={"/users/" + props.id} color={"inherit"}>
+            <Link color={"inherit"}>
                 <img
                     height="50"
                     width="50"
