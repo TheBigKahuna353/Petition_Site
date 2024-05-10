@@ -180,7 +180,7 @@ const EditPetition = () => {
         if (e.target.files) {
             axios.put("http://localhost:4941/api/v1/petitions/" + id + "/image", e.target.files[0], {headers: {
                 "X-Authorization": token,
-                "Content-Type": "image/" + e.target.files[0].type.split("/")[1]}}
+                "Content-Type": e.target.files[0].type}}
             ).then(() => {
                 if (e.target.files) {
                     setImage(e.target.files[0])
@@ -261,7 +261,7 @@ const EditPetition = () => {
                 <div>
                     <Button
                         component="label"
-                        style={{width: "20%", marginRight: "10px"}}
+                        style={{width: "200px", marginRight: "10px"}}
                         role={undefined}
                         variant="contained"
                         tabIndex={-1}
@@ -273,7 +273,7 @@ const EditPetition = () => {
                     <Button 
                     onClick={() => nav("/myPetitions")} 
                     variant="contained" 
-                    style={{width: "20%"}}>Back</Button>
+                    style={{width: "200px"}}>Back</Button>
                 </div>
             </FormControl>
             <img src={"http://localhost:4941/api/v1/petitions/" + id + "/image"} key={Date.now()} alt="Petition" style={{width: "200px", height: "200px"}}/>

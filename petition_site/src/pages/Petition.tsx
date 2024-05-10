@@ -126,7 +126,7 @@ const Petition = () => {
                         <p></p>
                     </div>
                 </Card>
-                <div style={{width: "80%", margin: "10px"}}>
+                <div style={{width: "70%", margin: "10px"}}>
                     <SupportTierList supportTiers={petition?.supportTiers ?? []}/>
                 </div>
             </div>

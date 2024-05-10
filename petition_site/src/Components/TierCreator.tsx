@@ -148,7 +148,8 @@ const TierCreator = (props: tiers) => {
       const tiersCSS: CSS.Properties = {
         margin: "10px",
         height: "350px",
-        position: "relative"
+        position: "relative",
+        width: "100%"
     }
 
     const formCSS: CSS.Properties = {

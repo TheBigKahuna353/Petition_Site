@@ -11,7 +11,6 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from 'axios';
 import { usePageStore, useTokenStore } from '../store';
-import getErrorMessage from '../services/errorPrinting';
 import Menu from '../Components/Menu';
 import { useNavigate } from 'react-router-dom';
 
@@ -50,7 +49,7 @@ export default function SignUp() {
             .catch(error => {
                 console.log(error);
                 setErrorFlag(true);
-                setErrorMessage(getErrorMessage(error).toString());
+                setErrorMessage(error.response.statusText);
             })
         };
 
