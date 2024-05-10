@@ -39,7 +39,6 @@ const Menu = () => {
         setAnchorElUser(null);
         if (event.target.textContent === 'Logout') {
             useTokenStore.getState().logout()
-            console.log("Menu.tsx: Logged out")
         } else if (event.target.textContent === 'Profile') {
             window.location.href = `/profile`
         } else if (event.target.textContent === 'Manage Petitions') {

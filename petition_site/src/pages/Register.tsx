@@ -20,12 +20,6 @@ export default function SignUp() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-            console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-            firstName: data.get('firstName'),
-            lastName: data.get('lastName')
-            });
             axios.post('http://localhost:4941/api/v1/users/register', {
                 email: data.get('email'),
                 password: data.get('password'),
@@ -47,7 +41,6 @@ export default function SignUp() {
                 })
             })
             .catch(error => {
-                console.log(error);
                 setErrorFlag(true);
                 setErrorMessage(error.response.statusText);
             })

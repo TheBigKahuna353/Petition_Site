@@ -50,8 +50,6 @@ const Petitions = () => {
             return params
         }
         const getPetitions = () => {
-            console.log("getting petitions")
-            console.log(getParams())
             axios.get('http://localhost:4941/api/v1/petitions', {params: getParams()})
             .then((response) => {
                 setErrorFlag(false)
@@ -60,8 +58,7 @@ const Petitions = () => {
                 setNumPetitions(response.data.count)
             }, (error) => {
                 setErrorFlag(true)
-                setErrorMessage(error.toString())
-                console.log("error in petitions")
+                setErrorMessage(error.response.statusText)
             })
         }
         getPetitions()
@@ -83,7 +80,6 @@ const Petitions = () => {
     }
 
     const handlePageSize = (event: any, value: number) => {
-        console.log(value)
         setPage(value)
     }
 

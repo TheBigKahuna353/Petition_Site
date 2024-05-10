@@ -23,6 +23,7 @@ const SupportersList = (props: Props) => {
         })
         .catch(error => {
             console.log(error.response.statusText)
+            // TODO: error handling
         })
     }, [props.petitionId])
 

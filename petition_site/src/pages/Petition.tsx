@@ -95,9 +95,11 @@ const Petition = () => {
             }})
         .then(response => {
             console.log(response)
+            // TODO: show success message and update supporters list
         })
         .catch(error => {
             console.log(error)
+            // TODO: show error message
         })
     }
 

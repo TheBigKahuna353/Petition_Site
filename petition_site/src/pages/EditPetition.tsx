@@ -188,7 +188,6 @@ const EditPetition = () => {
                 }
             }, (error) => {
                 setNetworkError(true)
-                console.log(error)
             })
         }
     }

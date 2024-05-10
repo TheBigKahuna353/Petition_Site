@@ -36,7 +36,6 @@ const SupportTierListObj = (props: Props) => {
 
     const handleEdit = (id: number) => {
         handleCloseUserMenu()
-        console.log(props.editDelete)
         if (props.editCallback) {
             props.editCallback(id)
         }
