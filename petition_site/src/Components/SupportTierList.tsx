@@ -22,7 +22,7 @@ const SupportTierList = (props: SupportTierListProps) => {
                     {props.supportTiers.map((supportTier: SupportTier) => {
                         return (
                             <div style={{position: "relative", maxWidth:"30%", minWidth: "250px"}}>
-                                <SupportTierListObj supportTier={supportTier} editDelete editCallback={props.editCallback} deleteCallback={props.deleteCallback}/>
+                                <SupportTierListObj supportTier={supportTier} editDelete={props.editDelete ?? false} editCallback={props.editCallback} deleteCallback={props.deleteCallback}/>
                             </div>
                         )
                     })}

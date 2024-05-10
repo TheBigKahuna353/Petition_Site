@@ -7,7 +7,7 @@ import React from "react";
 
 interface Props {
     supportTier: SupportTier,
-    editDelete?: boolean,
+    editDelete: boolean,
     editCallback?: (id: number) => void,
     deleteCallback?: (id: number) => void
 }
@@ -36,6 +36,7 @@ const SupportTierListObj = (props: Props) => {
 
     const handleEdit = (id: number) => {
         handleCloseUserMenu()
+        console.log(props.editDelete)
         if (props.editCallback) {
             props.editCallback(id)
         }
