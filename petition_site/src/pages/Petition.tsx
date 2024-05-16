@@ -3,13 +3,12 @@ import Menu from "../Components/Menu"
 import React from "react"
 import axios from "axios"
 import { usePageStore, usePetitionStore, useTokenStore } from "../store"
-import { Box, Button, Card, CardMedia, FormControl, InputLabel, MenuItem, Modal, Select, TextField, Typography } from "@mui/material"
+import { Alert, Box, Button, Card, CardMedia, FormControl, InputLabel, MenuItem, Modal, Select, Snackbar, TextField, Typography } from "@mui/material"
 import Owner from "../Components/OwnerDisplay"
 import SupportTierList from "../Components/SupportTierList"
 import SupportersList from "../Components/SupportersList"
 import PetitionListObj from "../Components/petitionListObj"
 import CSS from "csstype"
-import { Label } from "@mui/icons-material"
 
 
 const Petition = () => {
@@ -18,8 +17,7 @@ const Petition = () => {
     
     const petitionImg = `http://localhost:4941/api/v1/petitions/${id}/image`
 
-    const [errorFlag, setErrorFlag] = React.useState(false)
-    const [errorMessage, setErrorMessage] = React.useState("")
+    const [tierError, setTierError] = React.useState("")
 
     const [petition, setPetition] = React.useState<Petition>()
 
@@ -29,6 +27,7 @@ const Petition = () => {
     const [catergory, setCategory] = React.useState<Catergory>({categoryId: 0, name: ""})
 
     const date = new Date(petition?.creationDate ?? 0).toLocaleDateString()
+    const [update, setUpdate] = React.useState(0)
 
     const [similarPets, setSimilarPets] = React.useState<Petition[]>([])
 
@@ -39,6 +38,15 @@ const Petition = () => {
     const token = useTokenStore(state => state.token)
     const userId = useTokenStore(state => state.userId)
     const setPage = usePageStore(state => state.setPrevPage)
+
+    const [openSB, setOpenSB] = React.useState(false)
+    const handleClose = (event?: any, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSB(false);
+    };
+    const [SBerror, setSBerror] = React.useState("")
 
     const card: CSS.Properties = {
         padding: "10px",
@@ -54,8 +62,8 @@ const Petition = () => {
                 setCategories(response.data)
             })
             .catch(error => {
-                setErrorFlag(true)
-                setErrorMessage(error.response.statusText)
+                setOpenSB(true)
+                setSBerror(error.response.statusText)
             })
         }
     }, [setCategories, categories])
@@ -67,8 +75,8 @@ const Petition = () => {
             setCategory(categories[response.data.categoryId])
         })
         .catch(error => {
-            setErrorFlag(true)
-            setErrorMessage(error.response.statusText)
+            setOpenSB(true)
+            setSBerror(error.response.statusText)
         })
     }, [id, categories])
 
@@ -76,16 +84,32 @@ const Petition = () => {
         if (petition?.categoryId === undefined) return;
         axios.get(`http://localhost:4941/api/v1/petitions`, {params: {categoryIds: [petition?.categoryId]}})
         .then(response => {
-            setSimilarPets(response.data.petitions.filter((pet: Petition) => pet.petitionId !== petition?.petitionId))
+            const sameCat = response.data.petitions.filter((pet: Petition) => pet.petitionId !== petition?.petitionId)
+            console.log(sameCat)
+
+            axios.get(`http://localhost:4941/api/v1/petitions`, {params: {ownerId: petition?.ownerId}})
+            .then(response => {
+                const sameOwner = response.data.petitions.filter((pet: Petition) => pet.petitionId !== petition?.petitionId)
+                console.log(sameOwner)
+                setSimilarPets([...sameCat, ...sameOwner])
+            })
+            .catch(error => {
+                setOpenSB(true)
+                setSBerror(error.response.statusText)
+            })
         })
         .catch(error => {
-            setErrorFlag(true)
-            setErrorMessage(error.response.statusText)
+            setOpenSB(true)
+            setSBerror(error.response.statusText)
         })
-    }, [petition?.categoryId, petition?.petitionId])
+    }, [petition?.categoryId, petition?.petitionId, petition?.ownerId])
 
 
     const handleSupport = () => {
+        if (tier === 0) {
+            setTierError("Please select a tier")
+            return
+        }
         setOpenSupport(false)
         axios.post(`http://localhost:4941/api/v1/petitions/${id}/supporters`, {
                 supportTierId: tier, 
@@ -95,11 +119,12 @@ const Petition = () => {
             }})
         .then(response => {
             console.log(response)
-            // TODO: show success message and update supporters list
+            setOpenSB(true)
+            setUpdate(update + 1)
         })
         .catch(error => {
-            console.log(error)
-            // TODO: show error message
+            setOpenSB(true)
+            setSBerror(error.response.statusText)
         })
     }
 
@@ -125,15 +150,8 @@ const Petition = () => {
             window.location.href = "/login"
         }
         setOpenSupport(true)
-    }
-
-    if (errorFlag) {
-        return (
-            <div>
-                <h1>Error</h1>
-                <p>{errorMessage}</p>
-            </div>
-        )
+        setTier(0)
+        setTierError("")
     }
 
     return (
@@ -160,7 +178,7 @@ const Petition = () => {
                             <p>{petition?.description}</p>
                         </div>
                     </Card>
-                    <SupportersList petitionId={petition?.petitionId ?? 0} supportTiers={petition?.supportTiers ?? []}/>
+                    <SupportersList petitionId={petition?.petitionId ?? 0} supportTiers={petition?.supportTiers ?? []} update={update}/>
                 </div>
                 <Card style={{width: "25%", margin: "20px"}}>
                     <div>
@@ -217,13 +235,15 @@ const Petition = () => {
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
                                 value={tier}
+                                error={tierError !== ""}
+                                required
                                 label="Tier"
                                 sx={margin}
                                 onChange={(e) => setTier(e.target.value as number)}
                             >
                                 {petition?.supportTiers.map((tier) => {
                                     return (
-                                        <MenuItem key={Date.now()}value={tier.supportTierId}>{tier.title}</MenuItem>
+                                        <MenuItem key={Date.now()}value={tier.supportTierId}>{tier.title + " - $" + tier.cost}</MenuItem>
                                     )
                                 })}
                             </Select>
@@ -254,6 +274,16 @@ const Petition = () => {
                     </Typography>
                 </Box>
             </Modal>
+            <Snackbar open={openSB} autoHideDuration={6000} onClose={handleClose}>
+                <Alert
+                    onClose={handleClose}
+                    severity={SBerror === "" ? "success" : "error"}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {SBerror === "" ? "Success" : SBerror}
+                </Alert>
+            </Snackbar>
         </div>
     )
 }

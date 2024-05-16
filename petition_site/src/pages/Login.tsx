@@ -17,13 +17,17 @@ import axios from 'axios';
 import Menu from '../Components/Menu';
 import { usePageStore } from '../store';
 import { useNavigate } from 'react-router-dom';
+import { Snackbar, Alert } from '@mui/material';
 
-
+const defaultErrors = {email: "", password: ""};
 
 export default function SignIn() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        if (!validate(data)) {
+            return;
+        }
         axios.post('http://localhost:4941/api/v1/users/login', {
             email: data.get('email'),
             password: data.get('password')
@@ -37,26 +41,52 @@ export default function SignIn() {
             }
         })
         .catch(error => {
-            setErrorFlag(true);
-            setErrorMessage(error.response.statusText);
+            if (error.response.status === 401) {
+                setErrors({email: "", password: "Invalid email or password"});
+            } else if (error.response.status === 400) {
+                if (error.response.statusText.indexOf("email") !== -1) {
+                    setErrors({email: "Invalid email", password: ""});
+                } else {
+                    setErrors({email: "", password: "Invalid email or password"});
+                }
+            } else {
+                setOpenSB(true);
+                setSBerror("Error: " + error.response.statusText);
+            }
         })
     };
 
-    const [errorFlag, setErrorFlag] = React.useState(false)
-    const [errorMessage, setErrorMessage] = React.useState("")
+    const [errors, setErrors] = React.useState(defaultErrors);
+
+    const [openSB, setOpenSB] = React.useState(false)
+    const handleClose = (event?: any, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSB(false);
+    };
+    const [SBerror, setSBerror] = React.useState("")
 
     const login = useTokenStore(state => state.login)
 
     const page = usePageStore(state => state.prevPage)
     const nav = useNavigate()
-    
-    if (errorFlag) {
-        return (
-            <div>
-                <h1>Error</h1>
-                <p>{errorMessage}</p>
-            </div>
-        )
+
+
+    const validate = (data: FormData) => {
+        let newErrors = defaultErrors;
+        let passed = true;
+        if (data.get('email') === "") {
+            newErrors.email = "Email is required";
+            passed = false;
+        }
+        if (data.get('password') === "") {
+            newErrors.password = "Password is required";
+            passed = false;
+        }
+        setErrors(newErrors);
+        console.log(newErrors);
+        return passed;
     }
 
     return (
@@ -84,6 +114,8 @@ export default function SignIn() {
                     required
                     fullWidth
                     id="email"
+                    error={errors.email !== ""}
+                    helperText={errors.email}
                     label="Email Address"
                     name="email"
                     autoComplete="email"
@@ -95,6 +127,8 @@ export default function SignIn() {
                     fullWidth
                     name="password"
                     label="Password"
+                    error={errors.password !== ""}
+                    helperText={errors.password}
                     type="password"
                     id="password"
                     autoComplete="current-password"
@@ -122,6 +156,16 @@ export default function SignIn() {
                 </Box>
             </Box>
         </Container>
+        <Snackbar open={openSB} autoHideDuration={6000} onClose={handleClose}>
+                <Alert
+                    onClose={handleClose}
+                    severity={SBerror === "" ? "success" : "error"}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {SBerror === "" ? "Success" : SBerror}
+                </Alert>
+            </Snackbar>
     </div>
   );
 }

@@ -12,9 +12,9 @@ interface tiers {
     addCallback?: (tier: SupportTier) => void
 }
 
+const defaultErrors = {title: "", description: "", cost: ""}
 
 const TierCreator = (props: tiers) => {
-
 
     const {tiers, setTiers} = props
     const [tierTitle, setTierTitle] = React.useState("")
@@ -39,30 +39,29 @@ const TierCreator = (props: tiers) => {
     const handleOpenSupporters = () => setOpenSupporters(true);
     const handleCloseSupporters = () => setOpenSupporters(false);
 
-    const [errors, setErrors] = React.useState({title: false, description: false, cost: false})
-    const [errorMsgs, setErrorMsgs] = React.useState({title: "Title already taken", description: "", cost: ""})
+    const [errors, setErrors] = React.useState(defaultErrors)
 
     const validateTier = () => {
+        let passed = true
+        let newErrors = {title: "", description: "", cost: ""}
         if (tiers.find(tier => {
                 if (editId === tier.supportTierId) {
                     return false
                 }
                 return tier.title === tierTitle}) !== undefined) {
-            setErrors({...errors, title: true})
-            setErrorMsgs({...errorMsgs, title: "Title already taken"})
-            return false
+            newErrors.title = "Title already exists"
+            passed = false
         }
         if (tierTitle === "") {
-            setErrors({...errors, title: true})
-            setErrorMsgs({...errorMsgs, title: "Title cannot be empty"})
-            return false
+            newErrors.title = "Title cannot be empty"
+            passed = false
         }
         if (tierDescription === "") {
-            setErrors({...errors, description: true})
-            setErrorMsgs({...errorMsgs, description: "Description cannot be empty"})
-            return false
+            newErrors.description = "Description cannot be empty"
+            passed = false
         }
-        return true
+        setErrors(newErrors)
+        return passed
       }
 
 
@@ -70,8 +69,7 @@ const TierCreator = (props: tiers) => {
         if (validateTier()) {
             setTiers([...tiers, {title: tierTitle, description: tierDescription, cost: tierCost, supportTierId: tiers.length}])
             handleClose()
-            setErrorMsgs({title: "", description: "", cost: ""})
-            setErrors({title: false, description: false, cost: false})
+            setErrors(defaultErrors)
             setTierCost(0)
             setTierDescription("")
             setTierTitle("")
@@ -88,8 +86,7 @@ const TierCreator = (props: tiers) => {
             if (props.editCallback) {
                 props.editCallback({title: tierTitle, description: tierDescription, cost: tierCost, supportTierId: editId})
             }
-            setErrorMsgs({title: "", description: "", cost: ""})
-            setErrors({title: false, description: false, cost: false})
+            setErrors({...defaultErrors, cost: "", description: "", title: ""})
             setTierCost(0)
             setTierDescription("")
             setTierTitle("")
@@ -182,8 +179,8 @@ const TierCreator = (props: tiers) => {
                                 label="Title" 
                                 variant="outlined" 
                                 style={formCSS}
-                                error={errors.title}
-                                helperText={errors.title ? errorMsgs.title : ""}
+                                error={errors.title !== ""}
+                                helperText={errors.title}
                                 />
                             <TextField 
                                 id="description" 
@@ -192,8 +189,8 @@ const TierCreator = (props: tiers) => {
                                 style={formCSS}
                                 value={tierDescription}
                                 onChange={(e) => {setTierDescription(e.target.value)}}
-                                error={errors.description}
-                                helperText={errors.description ? errorMsgs.description : ""}
+                                error={errors.description !== ""}
+                                helperText={errors.description}
                                 />
                             <TextField 
                                 id="cost" 
@@ -206,7 +203,8 @@ const TierCreator = (props: tiers) => {
                                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
                                 }}
                                 type='number'
-                                error={errors.cost}
+                                error={errors.cost !== ""}
+                                helperText={errors.cost}
                             />
                             <Button onClick={modalSubmit} variant="contained" style={{width: "50%", margin: "auto"}}>Add Tier</Button>
                         </FormControl>
@@ -232,8 +230,8 @@ const TierCreator = (props: tiers) => {
                                 label="Title" 
                                 variant="outlined" 
                                 style={formCSS}
-                                error={errors.title}
-                                helperText={errors.title ? errorMsgs.title : ""}
+                                error={errors.title !== ""}
+                                helperText={errors.title}
                                 />
                             <TextField 
                                 id="description" 
@@ -242,7 +240,8 @@ const TierCreator = (props: tiers) => {
                                 style={formCSS}
                                 value={tierDescription}
                                 onChange={(e) => {setTierDescription(e.target.value)}}
-                                error={errors.description}
+                                error={errors.description !== ""}
+                                helperText={errors.description}
                                 />
                             <TextField 
                                 id="cost" 
@@ -255,7 +254,8 @@ const TierCreator = (props: tiers) => {
                                     startAdornment: <InputAdornment position="start">$</InputAdornment>,
                                 }}
                                 type='number'
-                                error={errors.cost}
+                                error={errors.cost !== ""}
+                                helperText={errors.cost}
                             />
                             <Button onClick={modalSubmitEdit} variant="contained" style={{width: "50%", margin: "auto"}}>Edit Tier</Button>
                         </FormControl>

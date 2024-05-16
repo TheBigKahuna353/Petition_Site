@@ -28,7 +28,7 @@ const MyPetitions = () => {
     const handleCloseCantDel = () => setOpenCantDel(false);
 
 
-    if (userId === null) {
+    if (!userId) {
         setPage("/myPetitions");
         window.location.href = "/login";
     }

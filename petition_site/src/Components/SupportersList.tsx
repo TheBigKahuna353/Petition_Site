@@ -5,7 +5,8 @@ import axios from "axios"
 
 interface Props {
     petitionId: number,
-    supportTiers: SupportTier[]
+    supportTiers: SupportTier[],
+    update: number
 }
 
 const SupportersList = (props: Props) => {
@@ -25,7 +26,7 @@ const SupportersList = (props: Props) => {
             console.log(error.response.statusText)
             // TODO: error handling
         })
-    }, [props.petitionId])
+    }, [props.petitionId, props.update])
 
     useEffect(() => {
         setSupportersPage(supporters.slice((page - 1) * 3, page * 3))

@@ -16,6 +16,7 @@ const EditPetition = () => {
 
     const token = useTokenStore(state => state.token);
     const loggedIn = useTokenStore(state => state.loggedIn);
+    const userId = useTokenStore(state => state.userId);
     const nav = useNavigate();
     const setPage = usePageStore(state => state.setPrevPage);
 
@@ -31,7 +32,6 @@ const EditPetition = () => {
     const [updatedOpen, setUpdatedOpen] = React.useState(false)
     
     const [tiers, setTiers] = React.useState<Array<SupportTier>>([])
-    const [image, setImage] = React.useState<File>()
     const [title, setTitle] = React.useState<string>("")
     const [description, setDescription] = React.useState<string>("")
     const [category, setCategory] = React.useState<Catergory>({categoryId: -1, name: ""})
@@ -51,12 +51,9 @@ const EditPetition = () => {
             setDescription(petition.description)
             setCategory({categoryId: petition.categoryId, name: catergories.find((cat) => cat.categoryId === petition.categoryId)?.name || ""})
             setTiers(petition.supportTiers)
-            axios.get("http://localhost:4941/api/v1/petitions/" + id + "/image")
-            .then((res) => {
-                setImage(res.data)
-            }, (error) => {
-            })
-
+            if (userId !== petition.ownerId) {
+                nav("/myPetitions")
+            }
         }, (error) => {
             setNetworkError(true)
         })
@@ -66,7 +63,7 @@ const EditPetition = () => {
         }, (error) => {
             setNetworkError(true)
         })
-    }, [id, catergories, tiers])
+    }, [id])
 
     const inputCSS: CSS.Properties = {
         clip: 'rect(0 0 0 0)',
@@ -183,7 +180,6 @@ const EditPetition = () => {
                 "Content-Type": e.target.files[0].type}}
             ).then(() => {
                 if (e.target.files) {
-                    setImage(e.target.files[0])
                     window.location.reload();
                 }
             }, (error) => {
@@ -275,7 +271,7 @@ const EditPetition = () => {
                     style={{width: "200px"}}>Back</Button>
                 </div>
             </FormControl>
-            <img src={"http://localhost:4941/api/v1/petitions/" + id + "/image"} key={Date.now()} alt="Petition" style={{width: "200px", height: "200px"}}/>
+            <img src={"http://localhost:4941/api/v1/petitions/" + id + "/image"} alt="Petition" style={{width: "200px", height: "200px"}}/>
             <Snackbar
                 open={networkError}
                 autoHideDuration={6000}

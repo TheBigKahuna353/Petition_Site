@@ -1,7 +1,7 @@
 import React from "react"
-import { useTokenStore } from "../store"
+import { useTokenStore, usePageStore } from "../store"
 import axios from "axios"
-import { Box, Button, FormControl, Modal, TextField, Typography } from "@mui/material"
+import { Alert, Box, Button, FormControl, Modal, Snackbar, TextField, Typography } from "@mui/material"
 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
@@ -9,17 +9,17 @@ import CSS from 'csstype'
 import Menu from "../Components/Menu";
 
 
-// TODO:
-// - error handling on axios requests\
-// - make errors 1 object for all form fields
 
+const defaultErrors = {firstName: "", lastName: "", email: "", password: "", newPassword: "", confirmPassword: ""}
 
 const User = () => {
 
     const userId = useTokenStore(state => state.userId)
+    const setPrevPage = usePageStore(state => state.setPrevPage)
 
     if (!userId) {
-        window.location.href = '/login'
+        setPrevPage("/profile")
+        window.location.href = "/login"
     }
 
     const [editUser, setEditUser] = React.useState<User>({} as User)
@@ -32,6 +32,8 @@ const User = () => {
         })
         .catch(error => {
             console.error("user not authorised")
+            setOpenSB(true)
+            setSBerror("Error: " + error.response.statusText)
         })
     }, [userId])
 
@@ -41,12 +43,22 @@ const User = () => {
         setOpenPassword(true)
         setPasswords({current: "", new: "", confirm: ""})
     }
-    const [passwordIncorrect, setPasswordIncorrect] = React.useState("")
 
     const imageURL = 'http://localhost:4941/api/v1/users/' + userId + '/image'
 
     const defaultUserImageURL = 'https://png.pngitem.com/pimgs/s/150-1503945_transparent-user-png-default-user-image-png-png.png'
     
+    const [errors, setErrors] = React.useState(defaultErrors)
+
+    const [openSB, setOpenSB] = React.useState(false)
+    const handleClose = (event?: any, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSB(false);
+    };
+    const [SBerror, setSBerror] = React.useState("")
+
 
     const deleteImage = () => {
         axios.delete('http://localhost:4941/api/v1/users/' + userId + '/image', { headers: {
@@ -57,6 +69,8 @@ const User = () => {
         })
         .catch(error => {
             console.error("user not authorised")
+            setSBerror("Error: " + error.response.statusText)
+            setOpenSB(true)
         })
     }
 
@@ -71,7 +85,8 @@ const User = () => {
             window.location.reload()
         })
         .catch(error => {
-            console.error("user not authorised")
+            setSBerror("Error: " + error.response.statusText)
+            setOpenSB(true)
         })
     }
 
@@ -111,19 +126,79 @@ const User = () => {
         border: '2px solid #000',
         boxShadow: "24",
         p: 4,
-      };
-
+    };
+    
+    const validateEdit = () => {
+        let passed = true
+        let newErrors = {...defaultErrors}
+        if (editUser.firstName === "") {
+            newErrors = {...newErrors, firstName: "First Name cannot be empty"}
+            passed = false
+        }
+        if (editUser.lastName === "") {
+            newErrors = {...newErrors, lastName: "Last Name cannot be empty"}
+            passed = false
+        }
+        if (editUser.email === "") {
+            newErrors = {...newErrors, email: "Email cannot be empty"}
+            passed = false
+        }
+        if (editUser.email.indexOf('@') === -1) {
+            newErrors = {...newErrors, email: "Invalid email"}
+            passed = false
+        }
+        setErrors(newErrors)
+        return passed
+    }
+    
 
     const handleEdit = () => {
-        axios.put('http://localhost:4941/api/v1/users/' + userId, editUser, { headers: {
+        if (!validateEdit()) return
+
+        axios.patch('http://localhost:4941/api/v1/users/' + userId, editUser, { headers: {
             "X-Authorization": useTokenStore.getState().token
         }})
+        .then(response => {
+            setSBerror("")
+            setOpenSB(true)
+        })
         .catch(error => {
-            console.error("user not authorised")
+            console.error(error.response)
+            setSBerror("Error: " + error.response.statusText)
+            setOpenSB(true)
         })
     }
 
+    const validatePassword = () => {
+        let newErrors = {...defaultErrors}
+        let passed = true
+        if (passwords.current.length < 6) {
+            newErrors = {...newErrors, password: "Password must be at least 6 characters"}
+            passed = false
+        }
+        if (passwords.current === "") {
+            newErrors = {...newErrors, password: "Current Password cannot be empty"}
+            passed = false
+        }
+        if (passwords.new.length < 6) {
+            newErrors = {...newErrors, newPassword: "Password must be at least 6 characters"}
+            passed = false
+        }
+        if (passwords.new === "") {
+            newErrors = {...newErrors, newPassword: "New Password cannot be empty"}
+            passed = false
+        }
+        if (passwords.new !== passwords.confirm) {
+            passed = false
+        }
+        setErrors(newErrors)
+        return passed
+    }
+
+
     const changePassword = () => {
+        if (!validatePassword()) return
+
         axios.patch('http://localhost:4941/api/v1/users/' + userId, {
             currentPassword: passwords.current,
             password: passwords.new
@@ -132,12 +207,19 @@ const User = () => {
         }})
         .then(response => {
             setOpenPassword(false)
+            setSBerror("")
+            setOpenSB(true)
         })
         .catch(error => {
             console.error(error.response)
             const code = error.response.status
-            if (code >= 400 && code < 500) {
-                setPasswordIncorrect(error.response.statusText)
+            if (code === 401) {
+                setErrors({...defaultErrors, password: "Incorrect password"})
+            }
+            else {
+                setSBerror("Error: " + error.response.statusText)
+                setOpenSB(true)
+                setOpenPassword(false)
             }
         })
     }
@@ -151,18 +233,24 @@ const User = () => {
                     id="firstName" 
                     label="First Name" 
                     sx={blockCSS}
+                    error={errors.firstName !== ""}
+                    helperText={errors.firstName}
                     value={editUser?.firstName || ""} 
                     onChange={(e) => setEditUser({...editUser, firstName: e.target.value})} />
                 <TextField 
                     id="lastName" 
                     label="Last Name" 
                     sx={blockCSS}
+                    error={errors.lastName !== ""}
+                    helperText={errors.lastName}
                     value={editUser?.lastName || ""} 
                     onChange={(e) => setEditUser({...editUser, lastName: e.target.value})} />
                 <TextField 
                     id="email" 
                     label="Email" 
                     sx={blockCSS}
+                    error={errors.email !== ""}
+                    helperText={errors.email}
                     value={editUser?.email || ""} 
                     onChange={(e) => setEditUser({...editUser, email: e.target.value})} />
                 <Button
@@ -212,8 +300,8 @@ const User = () => {
                                 id="currentPassword"
                                 label="Current Password"
                                 type="password"
-                                error={passwordIncorrect !== ""}
-                                helperText={passwordIncorrect}
+                                error={errors.password !== ""}
+                                helperText={errors.password}
                                 sx={blockCSS}
                                 value={passwords.current}
                                 onChange={(e) => setPasswords({...passwords, current: e.target.value})}
@@ -224,6 +312,8 @@ const User = () => {
                                 type="password"
                                 sx={blockCSS}
                                 value={passwords.new}
+                                error={errors.newPassword !== ""}
+                                helperText={errors.newPassword}
                                 onChange={(e) => setPasswords({...passwords, new: e.target.value})}
                             />
                             <TextField
@@ -247,8 +337,22 @@ const User = () => {
                     </Typography>
                 </Box>
             </Modal>
+            <Snackbar open={openSB} autoHideDuration={6000} onClose={handleClose}>
+                <Alert
+                    onClose={handleClose}
+                    severity={SBerror === "" ? "success" : "error"}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {SBerror === "" ? "Changes saved" : SBerror}
+                </Alert>
+            </Snackbar>
         </div>
     )
 }
 
 export default User
+
+function usePrevPageStore(arg0: (state: any) => any) {
+    throw new Error("Function not implemented.");
+}

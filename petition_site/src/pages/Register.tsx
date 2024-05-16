@@ -13,55 +13,92 @@ import axios from 'axios';
 import { usePageStore, useTokenStore } from '../store';
 import Menu from '../Components/Menu';
 import { useNavigate } from 'react-router-dom';
+import { Snackbar, Alert } from '@mui/material';
 
-
+const defaultErrors = {email: "", password: "", firstName: "", lastName: ""};
 
 export default function SignUp() {
+
+    const [errors, setErrors] = React.useState(defaultErrors);
+
+    const validate = (firstName: string, lastName: string, email: string, password: string) => {
+        let newErrors = defaultErrors;
+        let passed = true;
+        if (firstName === "") {
+            newErrors.firstName = "First Name is required";
+            passed = false;
+        }
+        if (lastName === "") {
+            newErrors.lastName = "Last Name is required";
+            passed = false;
+        }
+        if (!email.includes("@")) {
+            newErrors.email = "Invalid email";
+            passed = false;
+        }
+        if (email === "") {
+            newErrors.email = "Email is required";
+            passed = false;
+        }
+        if (password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters";
+            passed = false;
+        }
+        if (password === "") {
+            newErrors.password = "Password is required";
+            passed = false;
+        }
+        setErrors(newErrors);
+        return passed;
+    }
+
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-            axios.post('http://localhost:4941/api/v1/users/register', {
+        if (!validate(data.get('firstName') as string, data.get('lastName') as string, data.get('email') as string, data.get('password') as string)) {
+            return;
+        }
+        axios.post('http://localhost:4941/api/v1/users/register', {
+            email: data.get('email'),
+            password: data.get('password'),
+            firstName: data.get('firstName'),
+            lastName: data.get('lastName')
+        })
+        .then(response => {
+            axios.post('http://localhost:4941/api/v1/users/login', {
                 email: data.get('email'),
-                password: data.get('password'),
-                firstName: data.get('firstName'),
-                lastName: data.get('lastName')
+                password: data.get('password')
             })
             .then(response => {
-                axios.post('http://localhost:4941/api/v1/users/login', {
-                    email: data.get('email'),
-                    password: data.get('password')
-                })
-                .then(response => {
-                    login(response.data.token, response.data.userId);
-                    if (page === "") {
-                        nav("/petitions");
-                    } else {
-                        nav(page);
-                    }
-                })
+                login(response.data.token, response.data.userId);
+                if (page === "") {
+                    nav("/petitions");
+                } else {
+                    nav(page);
+                }
             })
-            .catch(error => {
-                setErrorFlag(true);
-                setErrorMessage(error.response.statusText);
-            })
-        };
+        })
+        .catch(error => {
+            setOpenSB(true);
+            setSBerror(error.response.statusText);
+        })
+    };
 
-    const [errorFlag, setErrorFlag] = React.useState(false)
-    const [errorMessage, setErrorMessage] = React.useState("")
+
+    const [openSB, setOpenSB] = React.useState(false)
+    const handleClose = (event?: any, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSB(false);
+    };
+    const [SBerror, setSBerror] = React.useState("")
 
     const login = useTokenStore((state) => state.login);
 
     const nav = useNavigate()
-    const page = usePageStore(state => state.prevPage)
-    
-    if (errorFlag) {
-        return (
-            <div>
-                <h1>Error</h1>
-                <p>{errorMessage}</p>
-            </div>
-        )
-    }
+    const page = usePageStore(state => state.prevPage);
 
     return (
         <div>
@@ -90,6 +127,8 @@ export default function SignUp() {
                         name="firstName"
                         required
                         fullWidth
+                        error={errors.firstName !== ""}
+                        helperText={errors.firstName}
                         id="firstName"
                         label="First Name"
                         autoFocus
@@ -99,6 +138,8 @@ export default function SignUp() {
                         <TextField
                         required
                         fullWidth
+                        error={errors.lastName !== ""}
+                        helperText={errors.lastName}
                         id="lastName"
                         label="Last Name"
                         name="lastName"
@@ -109,6 +150,8 @@ export default function SignUp() {
                         <TextField
                         required
                         fullWidth
+                        error={errors.email !== ""}
+                        helperText={errors.email}
                         id="email"
                         label="Email Address"
                         name="email"
@@ -119,6 +162,8 @@ export default function SignUp() {
                         <TextField
                         required
                         fullWidth
+                        error={errors.password !== ""}
+                        helperText={errors.password}
                         name="password"
                         label="Password"
                         type="password"
@@ -145,6 +190,16 @@ export default function SignUp() {
                 </Box>
                 </Box>
             </Container>
+            <Snackbar open={openSB} autoHideDuration={6000} onClose={handleClose}>
+                <Alert
+                    onClose={handleClose}
+                    severity={SBerror === "" ? "success" : "error"}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {SBerror === "" ? "Changes saved" : SBerror}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }
