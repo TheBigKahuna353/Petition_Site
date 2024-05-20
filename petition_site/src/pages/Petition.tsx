@@ -3,19 +3,20 @@ import Menu from "../Components/Menu"
 import React from "react"
 import axios from "axios"
 import { usePageStore, usePetitionStore, useTokenStore } from "../store"
-import { Alert, Box, Button, Card, CardMedia, FormControl, InputLabel, MenuItem, Modal, Select, Snackbar, TextField, Typography } from "@mui/material"
+import { Alert, Box, Button, Card, CardMedia, FormControl, IconButton, InputLabel, MenuItem, Modal, Select, Snackbar, TextField, Typography } from "@mui/material"
 import Owner from "../Components/OwnerDisplay"
 import SupportTierList from "../Components/SupportTierList"
 import SupportersList from "../Components/SupportersList"
 import PetitionListObj from "../Components/petitionListObj"
 import CSS from "csstype"
+import CloseIcon from '@mui/icons-material/Close';
 
 
 const Petition = () => {
 
     const {id} = useParams()
     
-    const petitionImg = `http://localhost:4941/api/v1/petitions/${id}/image`
+    const petitionImg = `http://192.168.1.17:4941/api/v1/petitions/${id}/image`
 
     const [tierError, setTierError] = React.useState("")
 
@@ -57,7 +58,7 @@ const Petition = () => {
 
     React.useEffect(() => {
         if (categories.length === 0) {
-            axios.get("http://localhost:4941/api/v1/petitions/categories")
+            axios.get("http://192.168.1.17:4941/api/v1/petitions/categories")
             .then(response => {
                 setCategories(response.data)
             })
@@ -69,7 +70,7 @@ const Petition = () => {
     }, [setCategories, categories])
 
     React.useEffect(() => {
-        axios.get(`http://localhost:4941/api/v1/petitions/${id}`)
+        axios.get(`http://192.168.1.17:4941/api/v1/petitions/${id}`)
         .then(response => {
             setPetition(response.data)
             setCategory(categories[response.data.categoryId])
@@ -82,12 +83,12 @@ const Petition = () => {
 
     React.useEffect(() => {
         if (petition?.categoryId === undefined) return;
-        axios.get(`http://localhost:4941/api/v1/petitions`, {params: {categoryIds: [petition?.categoryId]}})
+        axios.get(`http://192.168.1.17:4941/api/v1/petitions`, {params: {categoryIds: [petition?.categoryId]}})
         .then(response => {
             const sameCat = response.data.petitions.filter((pet: Petition) => pet.petitionId !== petition?.petitionId)
             console.log(sameCat)
 
-            axios.get(`http://localhost:4941/api/v1/petitions`, {params: {ownerId: petition?.ownerId}})
+            axios.get(`http://192.168.1.17:4941/api/v1/petitions`, {params: {ownerId: petition?.ownerId}})
             .then(response => {
                 const sameOwner = response.data.petitions.filter((pet: Petition) => pet.petitionId !== petition?.petitionId)
                 console.log(sameOwner)
@@ -111,7 +112,7 @@ const Petition = () => {
             return
         }
         setOpenSupport(false)
-        axios.post(`http://localhost:4941/api/v1/petitions/${id}/supporters`, {
+        axios.post(`http://192.168.1.17:4941/api/v1/petitions/${id}/supporters`, {
                 supportTierId: tier, 
                 ...(message !== "" && {message: message})}, 
             {headers: {
@@ -180,7 +181,7 @@ const Petition = () => {
                     </Card>
                     <SupportersList petitionId={petition?.petitionId ?? 0} supportTiers={petition?.supportTiers ?? []} update={update}/>
                 </div>
-                <Card style={{width: "25%", margin: "20px"}}>
+                <Card style={{width: "25%", margin: "20px", height: "500px"}}>
                     <div>
                         <h2>Category</h2>
                         <p>{catergory.name}</p>
@@ -225,6 +226,15 @@ const Petition = () => {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={modalCSS}>
+                    <IconButton
+                        size="small"
+                        aria-label="close"
+                        color="inherit"
+                        style={{float: "right"}}
+                        onClick={() => setOpenSupport(false)}
+                    >
+                        <CloseIcon fontSize="small" />
+                    </IconButton>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Support
                     </Typography>

@@ -28,7 +28,7 @@ export default function SignIn() {
         if (!validate(data)) {
             return;
         }
-        axios.post('http://localhost:4941/api/v1/users/login', {
+        axios.post('http://192.168.1.17:4941/api/v1/users/login', {
             email: data.get('email'),
             password: data.get('password')
         })

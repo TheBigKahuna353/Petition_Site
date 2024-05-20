@@ -1,7 +1,8 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, InputAdornment, Modal, TextField, Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, IconButton, InputAdornment, Modal, TextField, Typography } from '@mui/material';
 import React from 'react';
 import SupportTierList from './SupportTierList';
 import CSS from 'csstype';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface tiers {
     tiers: SupportTier[],
@@ -167,6 +168,15 @@ const TierCreator = (props: tiers) => {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={modalCSS}>
+                    <IconButton
+                        size="small"
+                        aria-label="close"
+                        color="inherit"
+                        style={{float: "right"}}
+                        onClick={handleClose}
+                    >
+                        <CloseIcon fontSize="small" />
+                    </IconButton>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Add Support Tier
                     </Typography>
@@ -218,6 +228,15 @@ const TierCreator = (props: tiers) => {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={modalCSS}>
+                    <IconButton
+                        size="small"
+                        aria-label="close"
+                        color="inherit"
+                        style={{float: "right"}}
+                        onClick={handleCloseEdit}
+                    >
+                        <CloseIcon fontSize="small" />
+                    </IconButton>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Edit Support Tier
                     </Typography>

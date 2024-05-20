@@ -66,10 +66,10 @@ const OptionsMenu = (props: IProps) => {
                 onClose={handleCloseUserMenu}
             >
                 <MenuItem  onClick={() => handleEdit(props.id)}>
-                    <Typography textAlign="center">edit</Typography>
+                    <Typography textAlign="center">Edit</Typography>
                 </MenuItem>
                 <MenuItem  onClick={() => handleDelete(props.id)}>
-                    <Typography textAlign="center">delete</Typography>
+                    <Typography textAlign="center">Delete</Typography>
                 </MenuItem>
             </Menu>
         </div>

@@ -18,7 +18,7 @@ const SupportersList = (props: Props) => {
 
     useEffect(() => {
         if (props.petitionId === 0) return
-        axios.get(`http://localhost:4941/api/v1/petitions/${props.petitionId}/supporters`)
+        axios.get(`http://192.168.1.17:4941/api/v1/petitions/${props.petitionId}/supporters`)
         .then(response => {
             setSupporters(response.data)
         })
@@ -37,23 +37,22 @@ const SupportersList = (props: Props) => {
     }
 
     return (
-        <div style={{marginTop:"20px", height:"420px", background:"red"}}>
-            <Card style={{height:"100%"}}>
-                <h1>Supporters</h1>
-                <div style={{display: "flex", justifyContent: "space-evenly", height:"65%"}}>
-                    {supportersPage.map((supporter: Supporter) => {
-                        return (
-                            <SupportersListObj supporter={supporter} tier={getTier(supporter)}/>
-                        )
-                    })}
-                </div>
-                <Pagination 
-                count={Math.ceil(supporters.length / 3)} 
-                color="primary"
-                onChange={(event, value) => setPage(value)}
-                style={{display:"inline-flex", margin:"15px"}}/>
-            </Card>
-        </div>
+        <Card style={{minHeight:"320px", marginTop:"20px"}}>
+            <h1>Supporters</h1>
+            <div style={{display: "flex", justifyContent: "space-evenly", alignItems:"stretch"}}>
+                {supportersPage.map((supporter: Supporter) => {
+                    return (
+                        <SupportersListObj supporter={supporter} tier={getTier(supporter)}/>
+                    )
+                })}
+            </div>
+            <br/>
+            <Pagination 
+            count={Math.ceil(supporters.length / 3)} 
+            color="primary"
+            onChange={(event, value) => setPage(value)}
+            style={{display:"inline-flex", margin:"15px"}}/>
+        </Card>
     );
 }
 

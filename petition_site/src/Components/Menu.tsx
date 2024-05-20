@@ -49,7 +49,7 @@ const Menu = () => {
 
     const userId = useTokenStore(state => state.userId)
 
-    const userURL = `http://localhost:4941/api/v1/users/${userId}/image`
+    const userURL = `http://192.168.1.17:4941/api/v1/users/${userId}/image`
     const defaultUserImageURL = 'https://png.pngitem.com/pimgs/s/150-1503945_transparent-user-png-default-user-image-png-png.png'
 
     const settings = ['Profile', 'Manage Petitions', 'Logout'];
@@ -69,7 +69,7 @@ const Menu = () => {
                         <Button color="inherit" href="/petitions" style={{float: "left"}}>All Petitions</Button>
                     </div>
                     <Typography variant="h6" component="div">
-                        Menu
+                        Petition Site
                     </Typography>
                     <div style={{flexGrow: "1", flexBasis: "0"}}>
                         <div style={{float:"right"}}>

@@ -101,10 +101,10 @@ const CreatePetition = () => {
                         supportTiers: tiers,
                         image: image
                 }
-                axios.post("http://localhost:4941/api/v1/petitions", data, {headers: {"X-Authorization": token} })
+                axios.post("http://192.168.1.17:4941/api/v1/petitions", data, {headers: {"X-Authorization": token} })
                 .then((res) => {
                     const filetype = image?.type.split("/")[1]
-                    axios.put("http://localhost:4941/api/v1/petitions/" + res.data.petitionId + "/image", image, {headers: {
+                    axios.put("http://192.168.1.17:4941/api/v1/petitions/" + res.data.petitionId + "/image", image, {headers: {
                         "X-Authorization": token,
                         "Content-Type": "image/" + filetype}})
                     .then(() => {

@@ -50,7 +50,7 @@ const Petitions = () => {
             return params
         }
         const getPetitions = () => {
-            axios.get('http://localhost:4941/api/v1/petitions', {params: getParams()})
+            axios.get('http://192.168.1.17:4941/api/v1/petitions', {params: getParams()})
             .then((response) => {
                 setErrorFlag(false)
                 setErrorMessage("")
@@ -87,7 +87,7 @@ const Petitions = () => {
     const setCategories = usePetitionStore(state => state.setCategories)
     React.useEffect(() => {
         if (categories.length === 0) {
-            axios.get("http://localhost:4941/api/v1/petitions/categories")
+            axios.get("http://192.168.1.17:4941/api/v1/petitions/categories")
             .then(response => {
                 setCategories(response.data)
             })
@@ -147,7 +147,7 @@ const Petitions = () => {
                     )}
                     style={{ width: 500, margin: "10px", display: "inline-block"}}
                     renderInput={(params) => (
-                        <TextField {...params} variant="outlined" label="Filter Catergories" placeholder="Catergories" />
+                        <TextField {...params} variant="outlined" label="Filter Categories" placeholder="Categories" />
                     )}
                 />
                 <FormControl style={{margin: "10px"}}>

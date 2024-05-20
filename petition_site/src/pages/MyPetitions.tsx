@@ -35,7 +35,7 @@ const MyPetitions = () => {
 
     React.useEffect(() => {
         const getOwnPeitions = () => {
-            axios.get('http://localhost:4941/api/v1/petitions', { params: {
+            axios.get('http://192.168.1.17:4941/api/v1/petitions', { params: {
                 ownerId: userId
             }}).then((response) => {
                 setOwnPetitions(response.data.petitions);
@@ -46,7 +46,7 @@ const MyPetitions = () => {
             })
         }
         const getSupportedPetitions = () => {
-            axios.get('http://localhost:4941/api/v1/petitions', { params: {
+            axios.get('http://192.168.1.17:4941/api/v1/petitions', { params: {
                 supporterId: userId
             }}).then((response) => {
                 setSupportedPetitions(response.data.petitions);
@@ -67,7 +67,7 @@ const MyPetitions = () => {
 
     const actuallyDelete = () => {
         if (delId !== null) {
-            axios.delete('http://localhost:4941/api/v1/petitions/' + delId, { headers: {
+            axios.delete('http://192.168.1.17:4941/api/v1/petitions/' + delId, { headers: {
                 "X-Authorization": token
             }})
             .then((response) => {

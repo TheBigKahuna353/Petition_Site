@@ -59,14 +59,14 @@ export default function SignUp() {
         if (!validate(data.get('firstName') as string, data.get('lastName') as string, data.get('email') as string, data.get('password') as string)) {
             return;
         }
-        axios.post('http://localhost:4941/api/v1/users/register', {
+        axios.post('http://192.168.1.17:4941/api/v1/users/register', {
             email: data.get('email'),
             password: data.get('password'),
             firstName: data.get('firstName'),
             lastName: data.get('lastName')
         })
         .then(response => {
-            axios.post('http://localhost:4941/api/v1/users/login', {
+            axios.post('http://192.168.1.17:4941/api/v1/users/login', {
                 email: data.get('email'),
                 password: data.get('password')
             })
