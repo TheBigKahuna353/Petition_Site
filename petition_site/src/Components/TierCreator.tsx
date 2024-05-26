@@ -61,6 +61,10 @@ const TierCreator = (props: tiers) => {
             newErrors.description = "Description cannot be empty"
             passed = false
         }
+        if (tierCost < 0) {
+            newErrors.cost = "Cost cannot be less than $0"
+            passed = false
+        }
         setErrors(newErrors)
         return passed
       }

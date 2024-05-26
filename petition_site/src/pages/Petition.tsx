@@ -3,7 +3,7 @@ import Menu from "../Components/Menu"
 import React from "react"
 import axios from "axios"
 import { usePageStore, usePetitionStore, useTokenStore } from "../store"
-import { Alert, Box, Button, Card, CardMedia, FormControl, IconButton, InputLabel, MenuItem, Modal, Select, Snackbar, TextField, Typography } from "@mui/material"
+import { Alert, Box, Button, Card, CardMedia, FormControl, FormHelperText, IconButton, InputLabel, MenuItem, Modal, Select, Snackbar, TextField, Typography } from "@mui/material"
 import Owner from "../Components/OwnerDisplay"
 import SupportTierList from "../Components/SupportTierList"
 import SupportersList from "../Components/SupportersList"
@@ -16,7 +16,7 @@ const Petition = () => {
 
     const {id} = useParams()
     
-    const petitionImg = `http://192.168.1.17:4941/api/v1/petitions/${id}/image`
+    const petitionImg = `http://localhost:4941/api/v1/petitions/${id}/image`
 
     const [tierError, setTierError] = React.useState("")
 
@@ -58,7 +58,7 @@ const Petition = () => {
 
     React.useEffect(() => {
         if (categories.length === 0) {
-            axios.get("http://192.168.1.17:4941/api/v1/petitions/categories")
+            axios.get("http://localhost:4941/api/v1/petitions/categories")
             .then(response => {
                 setCategories(response.data)
             })
@@ -70,10 +70,10 @@ const Petition = () => {
     }, [setCategories, categories])
 
     React.useEffect(() => {
-        axios.get(`http://192.168.1.17:4941/api/v1/petitions/${id}`)
+        axios.get(`http://localhost:4941/api/v1/petitions/${id}`)
         .then(response => {
             setPetition(response.data)
-            setCategory(categories[response.data.categoryId])
+            setCategory(categories.find((cat) => cat.categoryId === response.data.categoryId) ?? {categoryId: 0, name: ""})
         })
         .catch(error => {
             setOpenSB(true)
@@ -83,12 +83,12 @@ const Petition = () => {
 
     React.useEffect(() => {
         if (petition?.categoryId === undefined) return;
-        axios.get(`http://192.168.1.17:4941/api/v1/petitions`, {params: {categoryIds: [petition?.categoryId]}})
+        axios.get(`http://localhost:4941/api/v1/petitions`, {params: {categoryIds: [petition?.categoryId]}})
         .then(response => {
             const sameCat = response.data.petitions.filter((pet: Petition) => pet.petitionId !== petition?.petitionId)
             console.log(sameCat)
 
-            axios.get(`http://192.168.1.17:4941/api/v1/petitions`, {params: {ownerId: petition?.ownerId}})
+            axios.get(`http://localhost:4941/api/v1/petitions`, {params: {ownerId: petition?.ownerId}})
             .then(response => {
                 const sameOwner = response.data.petitions.filter((pet: Petition) => pet.petitionId !== petition?.petitionId)
                 console.log(sameOwner)
@@ -112,7 +112,7 @@ const Petition = () => {
             return
         }
         setOpenSupport(false)
-        axios.post(`http://192.168.1.17:4941/api/v1/petitions/${id}/supporters`, {
+        axios.post(`http://localhost:4941/api/v1/petitions/${id}/supporters`, {
                 supportTierId: tier, 
                 ...(message !== "" && {message: message})}, 
             {headers: {
@@ -190,7 +190,7 @@ const Petition = () => {
                         <h2>Number of Supporters</h2>
                         <p>{petition?.numberOfSupporters}</p>
                         <h2>Total Money Raised</h2>
-                        <p>{petition?.moneyRaised}</p>
+                        <p>{"$" + (petition?.moneyRaised || "0")}</p>
                         <Owner id={petition?.ownerId ?? 0} firstName={petition?.ownerFirstName ?? ""} lastName={petition?.ownerLastName ?? ""}/>
                         <p></p>
                     </div>
@@ -240,23 +240,26 @@ const Petition = () => {
                     </Typography>
                     <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                         <FormControl fullWidth style={{position:"relative"}}>
-                            <InputLabel style={margin} id="demo-simple-select-label">Tier</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={tier}
-                                error={tierError !== ""}
-                                required
-                                label="Tier"
-                                sx={margin}
-                                onChange={(e) => setTier(e.target.value as number)}
-                            >
-                                {petition?.supportTiers.map((tier) => {
-                                    return (
-                                        <MenuItem key={Date.now()}value={tier.supportTierId}>{tier.title + " - $" + tier.cost}</MenuItem>
-                                    )
-                                })}
-                            </Select>
+                            <div style={margin}>
+                                <InputLabel style={margin} id="demo-simple-select-label">Tier</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={tier}
+                                    error={tierError !== ""}
+                                    required    
+                                    sx={{width: "100%"}}
+                                    label="Tier"
+                                    onChange={(e) => setTier(e.target.value as number)}
+                                >
+                                    {petition?.supportTiers.map((tier) => {
+                                        return (
+                                            <MenuItem key={Date.now()}value={tier.supportTierId}>{tier.title + " - $" + tier.cost}</MenuItem>
+                                        )
+                                    })}
+                                </Select>
+                                {tierError !== "" ? <FormHelperText error margin="dense">{tierError}</FormHelperText> : ""}
+                            </div>
                             <TextField
                                 id="message"
                                 label="Message"

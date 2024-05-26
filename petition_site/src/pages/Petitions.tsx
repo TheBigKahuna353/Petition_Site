@@ -3,10 +3,12 @@ import PetitionList from "../Components/petitionList"
 import Menu  from "../Components/Menu"
 import { usePetitionStore } from "../store"
 import axios from "axios"
-import { TextField, Autocomplete, Checkbox, FormControl, InputLabel, Select, MenuItem, Pagination } from "@mui/material"
+import { TextField, Autocomplete, Checkbox, FormControl, InputLabel, Select, MenuItem, Pagination, InputAdornment, IconButton, Icon } from "@mui/material"
 
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+
+import CloseIcon from '@mui/icons-material/Close';
 
 import CSS from 'csstype';
 
@@ -50,7 +52,7 @@ const Petitions = () => {
             return params
         }
         const getPetitions = () => {
-            axios.get('http://192.168.1.17:4941/api/v1/petitions', {params: getParams()})
+            axios.get('http://localhost:4941/api/v1/petitions', {params: getParams()})
             .then((response) => {
                 setErrorFlag(false)
                 setErrorMessage("")
@@ -81,13 +83,14 @@ const Petitions = () => {
 
     const handlePageSize = (event: any, value: number) => {
         setPage(value)
+        window.scrollTo(0, 0)
     }
 
     const categories = usePetitionStore(state => state.Categories)
     const setCategories = usePetitionStore(state => state.setCategories)
     React.useEffect(() => {
         if (categories.length === 0) {
-            axios.get("http://192.168.1.17:4941/api/v1/petitions/categories")
+            axios.get("http://localhost:4941/api/v1/petitions/categories")
             .then(response => {
                 setCategories(response.data)
             })
@@ -118,13 +121,17 @@ const Petitions = () => {
         <div>
             <Menu />
             <div style={{position:"relative"}}>
-                <TextField
-                    id="outlined-basic"
-                    label="Search"
-                    variant="outlined"
-                    onKeyPress={handleSearch}
-                    style = {{width: 300, right: 0, position: "absolute", margin: "10px"}}
-                />
+                <div style = {{width: 300, right: 0, position: "absolute", margin: "10px"}}>
+                    <TextField
+                        id="outlined-basic"
+                        label="Search"
+                        variant="outlined"
+                        onKeyPress={handleSearch}
+                    />
+                    <IconButton size="small" aria-label="clear" onClick={() => setSearch((""))} style={{marginTop:"10px"}}>
+                        <CloseIcon fontSize="small" />
+                    </IconButton>
+                </div>
                 <Autocomplete
                     multiple
                     id="checkboxes-tags-demo"

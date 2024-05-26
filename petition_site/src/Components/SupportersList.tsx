@@ -18,7 +18,7 @@ const SupportersList = (props: Props) => {
 
     useEffect(() => {
         if (props.petitionId === 0) return
-        axios.get(`http://192.168.1.17:4941/api/v1/petitions/${props.petitionId}/supporters`)
+        axios.get(`http://localhost:4941/api/v1/petitions/${props.petitionId}/supporters`)
         .then(response => {
             setSupporters(response.data)
         })
@@ -47,11 +47,12 @@ const SupportersList = (props: Props) => {
                 })}
             </div>
             <br/>
-            <Pagination 
+            { supporters.length > 3 &&
+                <Pagination 
             count={Math.ceil(supporters.length / 3)} 
             color="primary"
             onChange={(event, value) => setPage(value)}
-            style={{display:"inline-flex", margin:"15px"}}/>
+            style={{display:"inline-flex", margin:"15px"}}/>}
         </Card>
     );
 }

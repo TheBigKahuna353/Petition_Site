@@ -16,7 +16,7 @@ const PetitionListObj = (props: IPetitionProps) => {
 
     const petition = props.petition
 
-    const imageURL = 'http://192.168.1.17:4941/api/v1/petitions/' + petition.petitionId + '/image'
+    const imageURL = 'http://localhost:4941/api/v1/petitions/' + petition.petitionId + '/image'
 
 
     const date = new Date(petition.creationDate).toLocaleDateString()

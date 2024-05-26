@@ -24,7 +24,7 @@ const CreatePetition = () => {
         setPage("/createPetition");
         nav("/login");
     }
-    const [networkError, setNetworkError] = React.useState(false)
+    const [networkError, setNetworkError] = React.useState("")
     
     const [tiers, setTiers] = React.useState<Array<SupportTier>>([])
     const [image, setImage] = React.useState<File>()
@@ -66,9 +66,19 @@ const CreatePetition = () => {
             errorMessages.title = "Title cannot be empty"
             hasError = true
         }
+        if (title.length > 128) {
+            errors.title = true
+            errorMessages.title = "Title cannot be longer than 128 characters"
+            hasError = true
+        }
         if (description === "") {
             errors.desc = true
             errorMessages.desc = "Description cannot be empty"
+            hasError = true
+        }
+        if (description.length > 1024) {
+            errors.desc = true
+            errorMessages.desc = "Description cannot be longer than 2048 characters"
             hasError = true
         }
         if (category.categoryId === -1) {
@@ -101,17 +111,18 @@ const CreatePetition = () => {
                         supportTiers: tiers,
                         image: image
                 }
-                axios.post("http://192.168.1.17:4941/api/v1/petitions", data, {headers: {"X-Authorization": token} })
+                axios.post("http://localhost:4941/api/v1/petitions", data, {headers: {"X-Authorization": token} })
                 .then((res) => {
                     const filetype = image?.type.split("/")[1]
-                    axios.put("http://192.168.1.17:4941/api/v1/petitions/" + res.data.petitionId + "/image", image, {headers: {
+                    axios.put("http://localhost:4941/api/v1/petitions/" + res.data.petitionId + "/image", image, {headers: {
                         "X-Authorization": token,
                         "Content-Type": "image/" + filetype}})
                     .then(() => {
                         nav("/myPetitions")
                     })
                 }, (error) => {
-                    setNetworkError(true)
+                    setNetworkError(error.response.statusText)
+                    console.error(error)
                 })
             }
       }
@@ -150,7 +161,7 @@ const CreatePetition = () => {
             size="small"
             aria-label="close"
             color="inherit"
-            onClick={() => setNetworkError(false)}
+            onClick={() => setNetworkError("")}
           >
             <CloseIcon fontSize="small" />
           </IconButton>
@@ -220,10 +231,10 @@ const CreatePetition = () => {
                 <Button onClick={submit} variant="contained" style={{width: "20%", margin: "auto", marginTop: "30px"}}>Create</Button>
             </FormControl>
             <Snackbar
-                open={networkError}
+                open={networkError !== ""}
                 autoHideDuration={6000}
-                onClose={() => setNetworkError(false)}
-                message="Network Error, please try again later"
+                onClose={() => setNetworkError("")}
+                message={"Network Error, " + networkError}
                 action={action}
             />
         </div>
