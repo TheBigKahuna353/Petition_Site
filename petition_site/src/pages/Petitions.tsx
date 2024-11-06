@@ -11,6 +11,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CloseIcon from '@mui/icons-material/Close';
 
 import CSS from 'csstype';
+import URL from "../Constanats"
 
 const sortOptions = [
     {name : "Ascending alphabetically", serverCode: "ALPHABETICAL_ASC"},
@@ -52,7 +53,7 @@ const Petitions = () => {
             return params
         }
         const getPetitions = () => {
-            axios.get('http://localhost:4941/api/v1/petitions', {params: getParams()})
+            axios.get(URL+'/api/v1/petitions', {params: getParams()})
             .then((response) => {
                 setErrorFlag(false)
                 setErrorMessage("")
@@ -90,7 +91,7 @@ const Petitions = () => {
     const setCategories = usePetitionStore(state => state.setCategories)
     React.useEffect(() => {
         if (categories.length === 0) {
-            axios.get("http://localhost:4941/api/v1/petitions/categories")
+            axios.get(URL+"/api/v1/petitions/categories")
             .then(response => {
                 setCategories(response.data)
             })

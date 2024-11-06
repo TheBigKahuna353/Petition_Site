@@ -14,6 +14,7 @@ import { usePageStore, useTokenStore } from '../store';
 import Menu from '../Components/Menu';
 import { useNavigate } from 'react-router-dom';
 import { Snackbar, Alert } from '@mui/material';
+import URL from '../Constanats';
 
 const defaultErrors = {email: "", password: "", firstName: "", lastName: ""};
 
@@ -59,14 +60,14 @@ export default function SignUp() {
         if (!validate(data.get('firstName') as string, data.get('lastName') as string, data.get('email') as string, data.get('password') as string)) {
             return;
         }
-        axios.post('http://localhost:4941/api/v1/users/register', {
+        axios.post(URL+'/api/v1/users/register', {
             email: data.get('email'),
             password: data.get('password'),
             firstName: data.get('firstName'),
             lastName: data.get('lastName')
         })
         .then(response => {
-            axios.post('http://localhost:4941/api/v1/users/login', {
+            axios.post(URL+'/api/v1/users/login', {
                 email: data.get('email'),
                 password: data.get('password')
             })

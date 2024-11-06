@@ -8,7 +8,7 @@ import Menu from "../Components/Menu";
 import TierCreator from "../Components/TierCreator";
 import axios from "axios";
 import CloseIcon from '@mui/icons-material/Close';
-
+import URL from "../Constanats";
 
 const EditPetition = () => {
 
@@ -44,7 +44,7 @@ const EditPetition = () => {
     }
 
     React.useEffect(() => {
-        axios.get("http://localhost:4941/api/v1/petitions/" + id)
+        axios.get("URL/api/v1/petitions/" + id)
         .then((res) => {
             const petition = res.data
             setTitle(petition.title)
@@ -57,7 +57,7 @@ const EditPetition = () => {
         }, (error) => {
             setNetworkError(true)
         })
-        axios.get("http://localhost:4941/api/v1/petitions/" + id + "/supporters")
+        axios.get("URL/api/v1/petitions/" + id + "/supporters")
         .then((res) => {
             setSupportedTiers(res.data)
         }, (error) => {
@@ -108,7 +108,7 @@ const EditPetition = () => {
       }
 
     const deleteTier = (Tid: number) => {
-        axios.delete("http://localhost:4941/api/v1/petitions/" + id + "/supportTiers/" + Tid, {headers: {
+        axios.delete(URL+"/api/v1/petitions/" + id + "/supportTiers/" + Tid, {headers: {
             "X-Authorization": token
         }}).catch((error) => {
             setNetworkError(true)
@@ -116,7 +116,7 @@ const EditPetition = () => {
     }
 
     const editTier = (tier: SupportTier) => {
-        axios.patch("http://localhost:4941/api/v1/petitions/" + id + "/supportTiers/" + tier.supportTierId, tier, {headers: {
+        axios.patch(URL+"/api/v1/petitions/" + id + "/supportTiers/" + tier.supportTierId, tier, {headers: {
             "X-Authorization": token
         }}).catch((error) => {
             setNetworkError(true)
@@ -125,7 +125,7 @@ const EditPetition = () => {
     }
 
     const addTier = (tier: SupportTier) => {
-        axios.put("http://localhost:4941/api/v1/petitions/" + id + "/supportTiers", tier, {headers: {
+        axios.put(URL+"/api/v1/petitions/" + id + "/supportTiers", tier, {headers: {
             "X-Authorization": token
         }}).then((res) => {
             setTiers([...tiers, res.data])
@@ -144,7 +144,7 @@ const EditPetition = () => {
                         description: description,
                         categoryId: category.categoryId,
                 }
-                axios.put("http://localhost:4941/api/v1/petitions", data, {headers: {"X-Authorization": token} })
+                axios.put(URL+"/api/v1/petitions", data, {headers: {"X-Authorization": token} })
                 .then((res) => {
                     setUpdatedOpen(true)
                 }, (error) => {
@@ -175,7 +175,7 @@ const EditPetition = () => {
 
     const imageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            axios.put("http://localhost:4941/api/v1/petitions/" + id + "/image", e.target.files[0], {headers: {
+            axios.put(URL+"/api/v1/petitions/" + id + "/image", e.target.files[0], {headers: {
                 "X-Authorization": token,
                 "Content-Type": e.target.files[0].type}}
             ).then(() => {
@@ -271,7 +271,7 @@ const EditPetition = () => {
                     style={{width: "200px"}}>Back</Button>
                 </div>
             </FormControl>
-            <img src={"http://localhost:4941/api/v1/petitions/" + id + "/image"} alt="Petition" style={{width: "200px", height: "200px"}}/>
+            <img src={"URL/api/v1/petitions/" + id + "/image"} alt="Petition" style={{width: "200px", height: "200px"}}/>
             <Snackbar
                 open={networkError}
                 autoHideDuration={6000}

@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -18,6 +16,7 @@ import Menu from '../Components/Menu';
 import { usePageStore } from '../store';
 import { useNavigate } from 'react-router-dom';
 import { Snackbar, Alert } from '@mui/material';
+import URL from '../Constanats';
 
 const defaultErrors = {email: "", password: ""};
 
@@ -28,7 +27,7 @@ export default function SignIn() {
         if (!validate(data)) {
             return;
         }
-        axios.post('http://localhost:4941/api/v1/users/login', {
+        axios.post(URL+'/api/v1/users/login', {
             email: data.get('email'),
             password: data.get('password')
         })

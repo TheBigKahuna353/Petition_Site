@@ -18,7 +18,7 @@ const SupportersList = (props: Props) => {
 
     useEffect(() => {
         if (props.petitionId === 0) return
-        axios.get(`http://localhost:4941/api/v1/petitions/${props.petitionId}/supporters`)
+        axios.get(`URL/api/v1/petitions/${props.petitionId}/supporters`)
         .then(response => {
             setSupporters(response.data)
         })

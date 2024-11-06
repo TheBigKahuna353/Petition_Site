@@ -10,13 +10,14 @@ import SupportersList from "../Components/SupportersList"
 import PetitionListObj from "../Components/petitionListObj"
 import CSS from "csstype"
 import CloseIcon from '@mui/icons-material/Close';
+import URL from "../Constanats"
 
 
 const Petition = () => {
 
     const {id} = useParams()
     
-    const petitionImg = `http://localhost:4941/api/v1/petitions/${id}/image`
+    const petitionImg = `URL/api/v1/petitions/${id}/image`
 
     const [tierError, setTierError] = React.useState("")
 
@@ -58,7 +59,7 @@ const Petition = () => {
 
     React.useEffect(() => {
         if (categories.length === 0) {
-            axios.get("http://localhost:4941/api/v1/petitions/categories")
+            axios.get(URL+"/api/v1/petitions/categories")
             .then(response => {
                 setCategories(response.data)
             })
@@ -70,7 +71,7 @@ const Petition = () => {
     }, [setCategories, categories])
 
     React.useEffect(() => {
-        axios.get(`http://localhost:4941/api/v1/petitions/${id}`)
+        axios.get(`${URL}/api/v1/petitions/${id}`)
         .then(response => {
             setPetition(response.data)
             setCategory(categories.find((cat) => cat.categoryId === response.data.categoryId) ?? {categoryId: 0, name: ""})
@@ -83,12 +84,12 @@ const Petition = () => {
 
     React.useEffect(() => {
         if (petition?.categoryId === undefined) return;
-        axios.get(`http://localhost:4941/api/v1/petitions`, {params: {categoryIds: [petition?.categoryId]}})
+        axios.get(`${URL}/api/v1/petitions`, {params: {categoryIds: [petition?.categoryId]}})
         .then(response => {
             const sameCat = response.data.petitions.filter((pet: Petition) => pet.petitionId !== petition?.petitionId)
             console.log(sameCat)
 
-            axios.get(`http://localhost:4941/api/v1/petitions`, {params: {ownerId: petition?.ownerId}})
+            axios.get(`${URL}/api/v1/petitions`, {params: {ownerId: petition?.ownerId}})
             .then(response => {
                 const sameOwner = response.data.petitions.filter((pet: Petition) => pet.petitionId !== petition?.petitionId)
                 console.log(sameOwner)
@@ -112,7 +113,7 @@ const Petition = () => {
             return
         }
         setOpenSupport(false)
-        axios.post(`http://localhost:4941/api/v1/petitions/${id}/supporters`, {
+        axios.post(`${URL}/api/v1/petitions/${id}/supporters`, {
                 supportTierId: tier, 
                 ...(message !== "" && {message: message})}, 
             {headers: {

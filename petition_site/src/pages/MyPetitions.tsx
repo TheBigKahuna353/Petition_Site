@@ -4,6 +4,7 @@ import axios from 'axios';
 import { usePetitionStore, useTokenStore, usePageStore } from '../store';
 import PetitionList from '../Components/petitionList';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import URL from '../Constanats';
 
 const MyPetitions = () => {
 
@@ -35,7 +36,7 @@ const MyPetitions = () => {
 
     React.useEffect(() => {
         const getOwnPeitions = () => {
-            axios.get('http://localhost:4941/api/v1/petitions', { params: {
+            axios.get(URL+'/api/v1/petitions', { params: {
                 ownerId: userId
             }}).then((response) => {
                 setOwnPetitions(response.data.petitions);
@@ -46,7 +47,7 @@ const MyPetitions = () => {
             })
         }
         const getSupportedPetitions = () => {
-            axios.get('http://localhost:4941/api/v1/petitions', { params: {
+            axios.get(URL+'/api/v1/petitions', { params: {
                 supporterId: userId
             }}).then((response) => {
                 setSupportedPetitions(response.data.petitions);
@@ -67,7 +68,7 @@ const MyPetitions = () => {
 
     const actuallyDelete = () => {
         if (delId !== null) {
-            axios.delete('http://localhost:4941/api/v1/petitions/' + delId, { headers: {
+            axios.delete(URL+'/api/v1/petitions/' + delId, { headers: {
                 "X-Authorization": token
             }})
             .then((response) => {

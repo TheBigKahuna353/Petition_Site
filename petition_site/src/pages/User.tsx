@@ -8,7 +8,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import CSS from 'csstype'
 import Menu from "../Components/Menu";
-
+import URL from "../Constanats";
 
 
 const defaultErrors = {firstName: "", lastName: "", email: "", password: "", newPassword: "", confirmPassword: ""}
@@ -25,7 +25,7 @@ const User = () => {
 
     const [editUser, setEditUser] = React.useState<User>({} as User)
     React.useEffect(() => {
-        axios.get('http://localhost:4941/api/v1/users/' + userId, { headers: {
+        axios.get(URL+'/api/v1/users/' + userId, { headers: {
             "X-Authorization": useTokenStore.getState().token
         }})
         .then(response => {
@@ -45,7 +45,7 @@ const User = () => {
         setPasswords({current: "", new: "", confirm: ""})
     }
 
-    const imageURL = 'http://localhost:4941/api/v1/users/' + userId + '/image'
+    const imageURL = URL+'/api/v1/users/' + userId + '/image'
 
     const defaultUserImageURL = 'https://png.pngitem.com/pimgs/s/150-1503945_transparent-user-png-default-user-image-png-png.png'
     
@@ -62,7 +62,7 @@ const User = () => {
 
 
     const deleteImage = () => {
-        axios.delete('http://localhost:4941/api/v1/users/' + userId + '/image', { headers: {
+        axios.delete(URL+'/api/v1/users/' + userId + '/image', { headers: {
             "X-Authorization": useTokenStore.getState().token
         }})
         .then(response => {
@@ -78,7 +78,7 @@ const User = () => {
     const changeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return
         const file = e.target.files[0]
-        axios.put('http://localhost:4941/api/v1/users/' + userId + '/image', file, { headers: {
+        axios.put(URL+'/api/v1/users/' + userId + '/image', file, { headers: {
             "X-Authorization": useTokenStore.getState().token,
             "Content-Type": file.type
         }})
@@ -156,7 +156,7 @@ const User = () => {
     const handleEdit = () => {
         if (!validateEdit()) return
 
-        axios.patch('http://localhost:4941/api/v1/users/' + userId, editUser, { headers: {
+        axios.patch('URL/api/v1/users/' + userId, editUser, { headers: {
             "X-Authorization": useTokenStore.getState().token
         }})
         .then(response => {
@@ -200,7 +200,7 @@ const User = () => {
     const changePassword = () => {
         if (!validatePassword()) return
 
-        axios.patch('http://localhost:4941/api/v1/users/' + userId, {
+        axios.patch('URL/api/v1/users/' + userId, {
             currentPassword: passwords.current,
             password: passwords.new
         }, { headers: {

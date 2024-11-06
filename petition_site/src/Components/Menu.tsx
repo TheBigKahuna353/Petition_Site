@@ -3,6 +3,7 @@ import { usePageStore, useTokenStore } from "../store";
 import { useLocation } from "react-router-dom";
 import CSS from "csstype";
 import React from "react";
+import URL from "../Constanats";
 
 const Menu = () => {
 
@@ -49,7 +50,7 @@ const Menu = () => {
 
     const userId = useTokenStore(state => state.userId)
 
-    const userURL = `http://localhost:4941/api/v1/users/${userId}/image`
+    const userURL = `${URL}/api/v1/users/${userId}/image`
     const defaultUserImageURL = 'https://png.pngitem.com/pimgs/s/150-1503945_transparent-user-png-default-user-image-png-png.png'
 
     const settings = ['Profile', 'Manage Petitions', 'Logout'];
