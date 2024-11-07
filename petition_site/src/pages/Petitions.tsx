@@ -60,6 +60,7 @@ const Petitions = () => {
                 setPetitions(response.data.petitions)
                 setNumPetitions(response.data.count)
             }, (error) => {
+                console.log("error: " + error)
                 setErrorFlag(true)
                 setErrorMessage(error.response.statusText)
             })

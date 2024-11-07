@@ -3,6 +3,7 @@ import CSS from 'csstype';
 import { Card, CardMedia } from "@mui/material";
 import Owner from "./OwnerDisplay";
 import OptionsMenu from "./OptionsMenu";
+import URL from "../Constanats";
 
 interface IPetitionProps {
     petition : Petition,
