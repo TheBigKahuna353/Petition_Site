@@ -19,8 +19,8 @@ const User = () => {
     const setPrevPage = usePageStore(state => state.setPrevPage)
 
     if (!userId) {
-        setPrevPage("/profile")
-        window.location.href = "/login"
+        setPrevPage("/Petition_Site/profile")
+        window.location.href = "/Petition_Site/login"
     }
 
     const [editUser, setEditUser] = React.useState<User>({} as User)

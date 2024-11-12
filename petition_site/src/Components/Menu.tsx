@@ -25,8 +25,8 @@ const Menu = () => {
         }
     }
 
-    const loginStyle = location.pathname === "/login" ? hidden : visible
-    const registerStyle = location.pathname === "/register" ? hidden : visible
+    const loginStyle = location.pathname === "/Petition_Site/login" ? hidden : visible
+    const registerStyle = location.pathname === "/Petition_Site/register" ? hidden : visible
 
     const loggedIn = useTokenStore(state => state.loggedIn)
 
@@ -41,9 +41,9 @@ const Menu = () => {
         if (event.target.textContent === 'Logout') {
             useTokenStore.getState().logout()
         } else if (event.target.textContent === 'Profile') {
-            window.location.href = `/profile`
+            window.location.href = `/Petition_Site/profile`
         } else if (event.target.textContent === 'Manage Petitions') {
-            window.location.href = '/myPetitions'
+            window.location.href = '/Petition_Site/myPetitions'
         }
         
     };
@@ -67,7 +67,7 @@ const Menu = () => {
             <AppBar position="static" style={{justifyContent: "space-between"}}>
                 <Toolbar style={{justifyContent: "center"}}>
                     <div style={{flexGrow: "1", flexBasis: "0"}}>
-                        <Button color="inherit" href="/petitions" style={{float: "left"}}>All Petitions</Button>
+                        <Button color="inherit" href="/Petition_Site/petitions" style={{float: "left"}}>All Petitions</Button>
                     </div>
                     <Typography variant="h6" component="div">
                         Petition Site
@@ -106,8 +106,8 @@ const Menu = () => {
                                 </Box>
                             :
                                 <ButtonGroup color="inherit" variant="text" style={{}}>
-                                    <Button href="/login" onClick={handleClick} style={loginStyle}>Login</Button>
-                                    <Button href="/register" onClick={handleClick} style={registerStyle}>Register</Button>
+                                    <Button href="/Petition_Site/login" onClick={handleClick} style={loginStyle}>Login</Button>
+                                    <Button href="/Petition_Site/register" onClick={handleClick} style={registerStyle}>Register</Button>
                                 </ButtonGroup>
                             }
                         </div>

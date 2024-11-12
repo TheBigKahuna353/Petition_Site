@@ -45,7 +45,7 @@ const Owner = (props: IOwnerProps) => {
                         {props.firstName.length > 15 ? props.firstName.substring(0, 15) + "..." : props.firstName}
                     </div>
                     <div>
-                        {props.firstName.length > 15 ? props.firstName.substring(0, 15) + "..." : props.firstName}
+                        {props.lastName.length > 15 ? props.lastName.substring(0, 15) + "..." : props.lastName}
                     </div>
                 </div>
             </Link>

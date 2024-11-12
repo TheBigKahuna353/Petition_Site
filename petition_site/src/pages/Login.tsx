@@ -143,7 +143,7 @@ export default function SignIn() {
                         <Grid item xs>
                         </Grid>
                         <Grid item>
-                            <Link href="/register" variant="body2">
+                            <Link href="/Petition_Site/register" variant="body2">
                                 {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>

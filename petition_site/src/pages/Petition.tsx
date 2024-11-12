@@ -17,7 +17,7 @@ const Petition = () => {
 
     const {id} = useParams()
     
-    const petitionImg = `URL/api/v1/petitions/${id}/image`
+    const petitionImg = `${URL}/api/v1/petitions/${id}/image`
 
     const [tierError, setTierError] = React.useState("")
 
@@ -148,8 +148,8 @@ const Petition = () => {
 
     const clickSupport = () => {
         if (!token) {
-            setPage(window.location.pathname)
-            window.location.href = "/login"
+            setPage("/Petition_Site" + window.location.pathname)
+            window.location.href = "/Petition_Site/login"
         }
         setOpenSupport(true)
         setTier(0)

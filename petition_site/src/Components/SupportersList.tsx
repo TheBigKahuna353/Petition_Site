@@ -2,6 +2,7 @@ import { Card, Pagination } from "@mui/material"
 import React, { useEffect } from "react"
 import SupportersListObj from "./SupportersListObj"
 import axios from "axios"
+import URL from "../Constanats"
 
 interface Props {
     petitionId: number,
@@ -18,7 +19,7 @@ const SupportersList = (props: Props) => {
 
     useEffect(() => {
         if (props.petitionId === 0) return
-        axios.get(`URL/api/v1/petitions/${props.petitionId}/supporters`)
+        axios.get(`${URL}/api/v1/petitions/${props.petitionId}/supporters`)
         .then(response => {
             setSupporters(response.data)
         })

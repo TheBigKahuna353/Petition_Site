@@ -30,8 +30,8 @@ const MyPetitions = () => {
 
 
     if (!userId) {
-        setPage("/myPetitions");
-        window.location.href = "/login";
+        setPage("/Petition_Site/myPetitions");
+        window.location.href = "/Petition_Site/login";
     }
 
     React.useEffect(() => {
@@ -99,7 +99,7 @@ const MyPetitions = () => {
     return (
         <div>
             <Menu />
-            <Button variant="contained" style={{marginTop: "2%"}} href="/createPetition">Create Petition</Button>
+            <Button variant="contained" style={{marginTop: "2%"}} href="/Petition_Site/createPetition">Create Petition</Button>
             <h1>Own Petitions</h1>
             {ownPetitions.length > 0 ?
                 <PetitionList 
@@ -107,7 +107,7 @@ const MyPetitions = () => {
                 catergories={catergories} 
                 editDelete={true}
                 editCallback={(id: number) => {
-                    window.location.href = "/editPetition/" + id
+                    window.location.href = "/Petition_Site/editPetition/" + id
                 }}
                 deleteCallback={handleDelete}
             />

@@ -97,6 +97,7 @@ const CreatePetition = () => {
             errorMessages.image = "Image cannot be empty"
             hasError = true
         }
+        console.log(category)
         setErrorsPet(errors)
         setErrorMessagesPet(errorMessages)
         return !hasError
@@ -109,13 +110,13 @@ const CreatePetition = () => {
                         title: title,
                         description: description,
                         categoryId: category.categoryId,
-                        supportTiers: tiers,
-                        image: image
+                        supportTiers: tiers
                 }
+                console.log(data)
                 axios.post(URL+"/api/v1/petitions", data, {headers: {"X-Authorization": token} })
                 .then((res) => {
                     const filetype = image?.type.split("/")[1]
-                    axios.put("URL/api/v1/petitions/" + res.data.petitionId + "/image", image, {headers: {
+                    axios.put(URL+"/api/v1/petitions/" + res.data.petitionId + "/image", image, {headers: {
                         "X-Authorization": token,
                         "Content-Type": "image/" + filetype}})
                     .then(() => {
@@ -142,7 +143,10 @@ const CreatePetition = () => {
 
     const catChange = (event: any, newValue: Catergory | null) => {
         if (newValue) { 
-            setCategory(newValue)
+            const newCategory = catergories.find((cat) => cat.name === newValue.name) as Catergory
+            console.log(newCategory)
+            console.log(catergories)
+            setCategory(newCategory)
             setErrorsPet({...errorsPet, cats: false})
             setErrorMessagesPet({...errorMessagesPet, cats: ""})
         }

@@ -44,7 +44,7 @@ const EditPetition = () => {
     }
 
     React.useEffect(() => {
-        axios.get("URL/api/v1/petitions/" + id)
+        axios.get(URL+"/api/v1/petitions/" + id)
         .then((res) => {
             const petition = res.data
             setTitle(petition.title)
@@ -57,7 +57,7 @@ const EditPetition = () => {
         }, (error) => {
             setNetworkError(true)
         })
-        axios.get("URL/api/v1/petitions/" + id + "/supporters")
+        axios.get(URL+"/api/v1/petitions/" + id + "/supporters")
         .then((res) => {
             setSupportedTiers(res.data)
         }, (error) => {

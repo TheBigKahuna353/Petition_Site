@@ -75,7 +75,7 @@ const PetitionListObj = (props: IPetitionProps) => {
                 deleteCallback={props.deleteCallback}
             />}
                             
-            <a href={'/petitions/' + petition.petitionId} style={{textDecoration: "none"}}>
+            <a href={'/Petition_Site/petitions/' + petition.petitionId} style={{textDecoration: "none"}}>
                 <Card sx={imageCard} ha-card-background={"F19782"}>
                     <CardMedia
                         component="img"
