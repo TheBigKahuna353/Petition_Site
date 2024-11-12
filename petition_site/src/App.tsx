@@ -14,7 +14,7 @@ import EditPetition from './pages/EditPetition';
 function App() {
   return (
     <div className="App">
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <div>
           <Routes>
             <Route path="/petitions" element={<Peititions/>} />
