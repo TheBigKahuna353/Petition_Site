@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import Menu from "../Components/Menu"
 import React from "react"
 import axios from "axios"
@@ -40,6 +40,8 @@ const Petition = () => {
     const token = useTokenStore(state => state.token)
     const userId = useTokenStore(state => state.userId)
     const setPage = usePageStore(state => state.setPrevPage)
+
+    const nav = useNavigate()
 
     const [openSB, setOpenSB] = React.useState(false)
     const handleClose = (event?: any, reason?: string) => {
@@ -148,8 +150,8 @@ const Petition = () => {
 
     const clickSupport = () => {
         if (!token) {
-            setPage("/Petition_Site" + window.location.pathname)
-            window.location.href = "/Petition_Site/login"
+            setPage(window.location.pathname)
+            nav("/Petition_Site/login")
         }
         setOpenSupport(true)
         setTier(0)

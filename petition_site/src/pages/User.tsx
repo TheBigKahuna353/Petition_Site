@@ -2,6 +2,7 @@ import React from "react"
 import { useTokenStore, usePageStore } from "../store"
 import axios from "axios"
 import { Alert, Box, Button, FormControl, IconButton, Modal, Snackbar, TextField, Typography } from "@mui/material"
+import { useNavigate } from "react-router"
 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,9 +19,11 @@ const User = () => {
     const userId = useTokenStore(state => state.userId)
     const setPrevPage = usePageStore(state => state.setPrevPage)
 
+    const nav = useNavigate()
+
     if (!userId) {
-        setPrevPage("/Petition_Site/profile")
-        window.location.href = "/Petition_Site/login"
+        setPrevPage("/profile")
+        nav("/login")
     }
 
     const [editUser, setEditUser] = React.useState<User>({} as User)

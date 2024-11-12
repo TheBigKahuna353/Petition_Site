@@ -4,6 +4,7 @@ import { Card, CardMedia } from "@mui/material";
 import Owner from "./OwnerDisplay";
 import OptionsMenu from "./OptionsMenu";
 import URL from "../Constanats";
+import { Link } from "react-router-dom";
 
 interface IPetitionProps {
     petition : Petition,
@@ -75,7 +76,7 @@ const PetitionListObj = (props: IPetitionProps) => {
                 deleteCallback={props.deleteCallback}
             />}
                             
-            <a href={'/Petition_Site/petitions/' + petition.petitionId} style={{textDecoration: "none"}}>
+            <Link to={'/petitions/' + petition.petitionId} style={{textDecoration: "none"}}>
                 <Card sx={imageCard} ha-card-background={"F19782"}>
                     <CardMedia
                         component="img"
@@ -110,7 +111,7 @@ const PetitionListObj = (props: IPetitionProps) => {
                         </div>
                     </div>
                 </Card>
-            </a>
+            </Link>
         </div>
     )
 }

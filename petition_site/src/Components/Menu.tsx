@@ -1,6 +1,6 @@
 import { AppBar, Button, ButtonGroup, Toolbar, Typography, Menu as Men, MenuItem, Avatar, Box, IconButton, Tooltip } from "@mui/material";
 import { usePageStore, useTokenStore } from "../store";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import CSS from "csstype";
 import React from "react";
 import URL from "../Constanats";
@@ -10,6 +10,7 @@ const Menu = () => {
     const location = useLocation()
     const setPage = usePageStore(state => state.setPrevPage)
 
+    const nav = useNavigate()
 
     const hidden: CSS.Properties = {
         visibility: "hidden"
@@ -41,9 +42,9 @@ const Menu = () => {
         if (event.target.textContent === 'Logout') {
             useTokenStore.getState().logout()
         } else if (event.target.textContent === 'Profile') {
-            window.location.href = `/Petition_Site/profile`
+            nav(`/profile`)
         } else if (event.target.textContent === 'Manage Petitions') {
-            window.location.href = '/Petition_Site/myPetitions'
+            nav('/myPetitions')
         }
         
     };
@@ -106,8 +107,8 @@ const Menu = () => {
                                 </Box>
                             :
                                 <ButtonGroup color="inherit" variant="text" style={{}}>
-                                    <Button href="/Petition_Site/login" onClick={handleClick} style={loginStyle}>Login</Button>
-                                    <Button href="/Petition_Site/register" onClick={handleClick} style={registerStyle}>Register</Button>
+                                    <Button LinkComponent={Link} href="/login" onClick={handleClick} style={loginStyle}>Login</Button>
+                                    <Button LinkComponent={Link} href="/register" onClick={handleClick} style={registerStyle}>Register</Button>
                                 </ButtonGroup>
                             }
                         </div>

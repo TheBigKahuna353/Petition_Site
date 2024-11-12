@@ -5,6 +5,7 @@ import { usePetitionStore, useTokenStore, usePageStore } from '../store';
 import PetitionList from '../Components/petitionList';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import URL from '../Constanats';
+import { useNavigate, Link } from 'react-router-dom';
 
 const MyPetitions = () => {
 
@@ -28,10 +29,12 @@ const MyPetitions = () => {
     const [openCantDel, setOpenCantDel] = React.useState(false);
     const handleCloseCantDel = () => setOpenCantDel(false);
 
+    const nav = useNavigate();
+
 
     if (!userId) {
         setPage("/Petition_Site/myPetitions");
-        window.location.href = "/Petition_Site/login";
+        nav("/Petition_Site/login");
     }
 
     React.useEffect(() => {
@@ -99,7 +102,7 @@ const MyPetitions = () => {
     return (
         <div>
             <Menu />
-            <Button variant="contained" style={{marginTop: "2%"}} href="/Petition_Site/createPetition">Create Petition</Button>
+            <Button LinkComponent={Link} variant="contained" style={{marginTop: "2%"}} href="/createPetition">Create Petition</Button>
             <h1>Own Petitions</h1>
             {ownPetitions.length > 0 ?
                 <PetitionList 
@@ -107,7 +110,7 @@ const MyPetitions = () => {
                 catergories={catergories} 
                 editDelete={true}
                 editCallback={(id: number) => {
-                    window.location.href = "/Petition_Site/editPetition/" + id
+                    nav("/editPetition" + id)
                 }}
                 deleteCallback={handleDelete}
             />

@@ -14,7 +14,7 @@ import {useTokenStore} from '../store';
 import axios from 'axios';
 import Menu from '../Components/Menu';
 import { usePageStore } from '../store';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as Link2 } from 'react-router-dom';
 import { Snackbar, Alert } from '@mui/material';
 import URL from '../Constanats';
 
@@ -143,7 +143,7 @@ export default function SignIn() {
                         <Grid item xs>
                         </Grid>
                         <Grid item>
-                            <Link href="/Petition_Site/register" variant="body2">
+                            <Link component={Link2} to="/register" variant="body2">
                                 {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>
