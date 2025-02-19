@@ -68,7 +68,9 @@ const Menu = () => {
             <AppBar position="static" style={{justifyContent: "space-between"}}>
                 <Toolbar style={{justifyContent: "center"}}>
                     <div style={{flexGrow: "1", flexBasis: "0"}}>
-                        <Button color="inherit" href="/Petition_Site/petitions" style={{float: "left"}}>All Petitions</Button>
+                        <Link to="/petitions" style={{textDecoration: "none", color: "white"}}>
+                            <Button color="inherit" style={{float: "left"}}>All Petitions</Button>
+                        </Link>
                     </div>
                     <Typography variant="h6" component="div">
                         Petition Site
@@ -107,8 +109,12 @@ const Menu = () => {
                                 </Box>
                             :
                                 <ButtonGroup color="inherit" variant="text" style={{}}>
-                                    <Button LinkComponent={Link} href="/login" onClick={handleClick} style={loginStyle}>Login</Button>
-                                    <Button LinkComponent={Link} href="/register" onClick={handleClick} style={registerStyle}>Register</Button>
+                                    <Link to="/login" style={{textDecoration: "none", color: "white"}}>
+                                        <Button onClick={handleClick} style={loginStyle}>Login</Button>
+                                    </Link>
+                                    <Link to="/register" style={{textDecoration: "none", color: "white"}}>
+                                        <Button onClick={handleClick} style={registerStyle}>Register</Button>
+                                    </Link>
                                 </ButtonGroup>
                             }
                         </div>
