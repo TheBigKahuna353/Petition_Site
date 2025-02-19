@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/Petition_Site/static/css/main.f855e6bc.css",
-    "main.js": "/Petition_Site/static/js/main.cfdac582.js",
+    "main.js": "/Petition_Site/static/js/main.f1f52916.js",
     "index.html": "/Petition_Site/index.html",
     "main.f855e6bc.css.map": "/Petition_Site/static/css/main.f855e6bc.css.map",
-    "main.cfdac582.js.map": "/Petition_Site/static/js/main.cfdac582.js.map"
+    "main.f1f52916.js.map": "/Petition_Site/static/js/main.f1f52916.js.map"
   },
   "entrypoints": [
     "static/css/main.f855e6bc.css",
-    "static/js/main.cfdac582.js"
+    "static/js/main.f1f52916.js"
   ]
 }
